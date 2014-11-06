@@ -1,3 +1,13 @@
 image_001: davide ragusa, https://ununsplash.imgix.net/reserve/tdedkQnQGCgIhk9eoEkP_DSC_0983.JPG?q=75&fm=jpg&s=6a5691b52e0f3dcb148472b085d938c3
 image_002: http://www.morguefile.com/archive/display/908164
 image_003: http://www.morguefile.com/archive/display/876604
+image_004: http://www.suunto.com/Global/News/2014/October/Heinerth/770_Heinerth-top.jpg
+image_005: http://www.suunto.com/Global/News/2014/August/UnderPole_screen_770.jpg
+image_006: Suunto Instagram, at Ojamo mine, http://instagram.com/p/uYR2jFRUvr/
+image_007: http://instagram.com/p/uiguICxUkv/
+image_008: http://instagram.com/p/tPY7vYRUtu/
+ 
+
+
+
+
