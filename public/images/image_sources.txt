@@ -20,6 +20,8 @@ image_019: http://www.morguefile.com/archive/display/848625
 image_020: http://www.morguefile.com/archive/display/705429
 image_021: http://www.morguefile.com/archive/display/34966
 image_022: http://www.morguefile.com/archive/display/928391
+image_023: http://www.morguefile.com/archive/display/928243
+
 
 
 
