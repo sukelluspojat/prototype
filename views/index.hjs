@@ -3,6 +3,8 @@
   <head>
     <title>{{ title }}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type='text/javascript' src='/javascript/swing.min.js'></script>
+    <script type='text/javascript' src='/javascript/sukelluspojat.js'></script>
   </head>
   <body>
   <ul class="stack">

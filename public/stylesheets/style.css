@@ -6,3 +6,13 @@ body {
 a {
   color: #00B7FF;
 }
+
+.stack {
+  width: 200px;
+  height: 200px;
+}
+
+.stack li {
+  width: 200px;
+  height: 200px;
+}
