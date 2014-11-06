@@ -3,19 +3,56 @@
   <head>
     <title>{{ title }}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script type='text/javascript' src='/javascript/swing.min.js'></script>
+    <script type='text/javascript' src='/javascript/swing.js'></script>
     <script type='text/javascript' src='/javascript/sukelluspojat.js'></script>
   </head>
-  <body>
-  <ul class="stack">
-  	<li><img src='/images/image_001.jpg'></li>
-  	<li><img src='/images/image_002.jpg'></li>
-  	<li><img src='/images/image_003.jpg'></li>
-  	<li><img src='/images/image_004.jpg'></li>
-  	<li><img src='/images/image_005.jpg'></li>
-  	<li><img src='/images/image_006.jpg'></li>
-  	<li><img src='/images/image_007.jpg'></li>
-  	<li><img src='/images/image_008.jpg'></li>
-  <ul>
+  <body id='body'>
+    <p><code>throwOutConfidence</code> (<code id="throw-out-confidence-bind">0</code>)</p>
+    <p><code>offset</code> (<code id="throw-out-offset">0</code>) </p>
+    <div id='viewport'>
+      <ul class="stack">
+        <li>
+          <img src='/images/image_001.jpg'>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+      	<li>
+          <img src='/images/image_002.jpg'>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+      	<li>
+          <img src='/images/image_003.jpg'>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+      	<li>
+          <img src='/images/image_004.jpg'>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+      	<li>
+          <img src='/images/image_005.jpg'>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+      	<li>
+          <img src='/images/image_006.jpg'>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+      	<li>
+          <img src='/images/image_007.jpg'>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+      	<li>
+          <img src='/images/image_008.jpg'>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+      <ul>
+    </div>
+
   </body>
 </html>
