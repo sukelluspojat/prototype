@@ -6,7 +6,9 @@ image_005: http://www.suunto.com/Global/News/2014/August/UnderPole_screen_770.jp
 image_006: Suunto Instagram, at Ojamo mine, http://instagram.com/p/uYR2jFRUvr/
 image_007: http://instagram.com/p/uiguICxUkv/
 image_008: http://instagram.com/p/tPY7vYRUtu/
- 
+image_009: Dean's Blue Hole?, http://instagram.com/p/plMPsfRUnD/ 
+image_010: http://instagram.com/p/pYJDcTxUjE/
+image_011: http://instagram.com/p/pLv2sHxUmK/
 
 
 
