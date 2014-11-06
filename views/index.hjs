@@ -5,7 +5,15 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1>{{ title }}</h1>
-    <p>Welcome to {{ title }}</p>
+  <ul class="stack">
+  	<li><img src='/images/image_001.jpg'></li>
+  	<li><img src='/images/image_002.jpg'></li>
+  	<li><img src='/images/image_003.jpg'></li>
+  	<li><img src='/images/image_004.jpg'></li>
+  	<li><img src='/images/image_005.jpg'></li>
+  	<li><img src='/images/image_006.jpg'></li>
+  	<li><img src='/images/image_007.jpg'></li>
+  	<li><img src='/images/image_008.jpg'></li>
+  <ul>
   </body>
 </html>
