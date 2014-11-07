@@ -39,19 +39,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     stack.on('dragmove', function (e) {
-        throwOutConfidenceElements[e.throwDirection == gajus.Swing.Card.DIRECTION_RIGHT ? 'yes' : 'no']
-          .opacity = e.throwOutConfidence - 0.3;
-        throwOutConfidenceBind.innerHTML = e.throwOutConfidence.toFixed(2);
+      throwOutConfidenceElements[e.throwDirection == gajus.Swing.Card.DIRECTION_RIGHT ? 'yes' : 'no']
+        .opacity = e.throwOutConfidence - 0.3;
+      throwOutConfidenceBind.innerHTML = e.throwOutConfidence.toFixed(2);
     });
     stack.on('dragstart', function (e) {
-        throwOutConfidenceElements.yes = e.target.querySelector('.yes').style;
-        throwOutConfidenceElements.no = e.target.querySelector('.no').style;
+      console.log("drag start");
+      throwOutConfidenceElements.yes = e.target.querySelector('.yes').style;
+      throwOutConfidenceElements.no = e.target.querySelector('.no').style;
+
+
     });
     stack.on('dragend', function (e) {
-        if (e.throwOutConfidence != 1) {
-            throwOutConfidenceElements.yes.opacity = 0;
-            throwOutConfidenceElements.no.opacity = 0;
-        }
+      pictureClick(e.target);
+      if (e.throwOutConfidence != 1) {
+          throwOutConfidenceElements.yes.opacity = 0;
+          throwOutConfidenceElements.no.opacity = 0;
+      }
     });
 
     document.onkeydown = function(e) {
@@ -79,5 +83,13 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
     }
-
 });
+
+function pictureClick(element) {
+  var display,
+      watchElements = element.querySelectorAll(".diveWatch"),
+      infoElements = element.querySelectorAll(".pictureInfo");
+  watchElements[0].style.display === '' ? display = 'block' : display = '';
+  watchElements[0].style.display = display;
+  infoElements[0].style.display = display;
+}
