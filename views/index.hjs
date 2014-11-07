@@ -3,13 +3,17 @@
   <head>
     <title>{{ title }}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="http://fb.me/react-0.12.0.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.12.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script type='text/javascript' src='/javascript/swing.js'></script>
-    <script type='text/javascript' src='/javascript/sukelluspojat.js'></script>
+    <script type='text/jsx' src='/javascript/sukelluspojat.js'></script>
   </head>
   <body id='body'>
     <p><code>throwOutConfidence</code> (<code id="throw-out-confidence-bind">0</code>)</p>
     <p><code>offset</code> (<code id="throw-out-offset">0</code>) </p>
-    <div id='viewport'>
+    <div id="container"></div>
+    <!-- <div id='viewport'>
       <ul class="stack">
         <li>
           <img class='picture'src='/images/image_001.jpg'>
@@ -64,6 +68,6 @@
         </li>
       </ul>
     </div>
-
+     -->
   </body>
 </html>

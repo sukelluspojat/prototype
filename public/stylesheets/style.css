@@ -25,7 +25,7 @@ a {
   position: absolute;
   z-index: 999;
   border-radius: 20px;
-  overflow: scroll;
+  /* overflow: scroll;  this is needed if we add text info on the bottom*/
 }
 #viewport ul {
   list-style-type: none;
