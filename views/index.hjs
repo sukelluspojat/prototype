@@ -14,42 +14,63 @@
         <li>
           <img class='picture'src='/images/image_001.jpg'>
           <img class='diveWatch' src='/images/suunto.png'>
+          <div class='pictureInfo'>
+            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
+          </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li>
       	<li>
           <img class='picture' src='/images/image_002.jpg'>
           <img class='diveWatch' src='/images/suunto.png'>
+          <div class='pictureInfo'>
+            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
+          </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li>
       	<li>
           <img class='picture' src='/images/image_003.jpg'>
           <img class='diveWatch' src='/images/suunto.png'>
+          <div class='pictureInfo'>
+            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
+          </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li>
       	<li>
           <img class='picture' src='/images/image_004.jpg'>
           <img class='diveWatch' src='/images/suunto.png'>
+          <div class='pictureInfo'>
+            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
+          </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li>
       	<li>
           <img class='picture' src='/images/image_005.jpg'>
           <img class='diveWatch' src='/images/suunto.png'>
+          <div class='pictureInfo'>
+            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
+          </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li>
       	<li>
           <img class='picture' src='/images/image_006.jpg'>
           <img class='diveWatch' src='/images/suunto.png'>
+          <div class='pictureInfo'>
+            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
+          </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li>
       	<li>
           <img class='picture' src='/images/image_007.jpg'>
           <img class='diveWatch' src='/images/suunto.png'>
+          <div class='pictureInfo'>
+            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
+          </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li>
