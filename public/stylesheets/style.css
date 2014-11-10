@@ -8,18 +8,18 @@ a {
 }
 
 #viewport {
-  width: 500px;
-  height: 700px;
+  width: 800px;
+  height: 1100px;
   border-style: solid;
   border-color: black;
   position: relative;
-  margin-left: 400px;
+  /* margin-left: 400px; */
 }
 
 #viewport li{
-  width: 480px;
-  height: 680px;
-  margin: 10px;
+  width: 95%;
+  height: 95%;
+  margin: 2.5%;
   top: 0;
   left: 0;
   position: absolute;
