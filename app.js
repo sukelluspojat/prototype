@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 
 var env = require('./env.js');
 var monk = require('monk');
-var db = monk(env.MONGOLAB_URI);
+// var db = monk(env.MONGOLAB_URI);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');

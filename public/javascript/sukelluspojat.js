@@ -1,9 +1,30 @@
+function AdjustViewPort() {
+  var width = window.innerWidth,
+    height = window.innerHeight,
+    sizeBlock, element;
+
+  if (width >= height) {
+    sizeBlock = height/5;
+    width = sizeBlock * 3;
+  }
+  else {
+    sizeBlock = width/3;
+    height = sizeBlock * 5;
+  }
+  element = document.getElementById("viewport");
+  console.log(element);
+  element.style.width = width;
+  element.style.height = height;
+
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     var stack,
       throwOutConfidenceBind,
       throwOutOffset,
       throwOutConfidenceElements = {};
+
+    AdjustViewPort();
     throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind');
     throwOutOffset = document.querySelector('#throw-out-offset');
     var config = {
