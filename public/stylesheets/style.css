@@ -32,7 +32,6 @@ a {
   top: 0;
   left: 0;
   position: absolute;
-  z-index: 999;
   border-radius: 20px;
 
 }
@@ -64,14 +63,38 @@ a {
   height: 150px;
   width: 150px;
   float: left;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+}
+.diveWatchContainer {
+  box-sizing: border-box;
+  height: 150px;
+  width: 150px;
+  padding-left: 35px;
+  padding-top: 45px;
+  padding-right: 35px;
+  padding-bottom: 40px;
+
+  position: relative
+}
+.diveWatchContainer span {
+  position: absolute;
+  font-family: eight-bit;
+  color: #2c2c2c;
+  text-align: center;
+  font-size: 0.6em;
+  width: 50%;
 }
 .pictureInfo {
   display: none;
   position: absolute;
-  @include vertical-align;
   bottom: 0;
   left: 0;
   right: 0;
+  top: 0;
+  padding-left: 5px;
+  padding-right: 5px;
   margin: auto;
   /* box-sizing: border-box; */
   /* width: 100% !important; */
@@ -100,7 +123,7 @@ body {
   opacity: 0;
   width: 100%;
   height: 100%;
-  border-radius: 20px;
+  border-radius: 70px;
 }
 
 
@@ -110,10 +133,7 @@ body {
 .yes {
   background: #1E824C; }
 
-@mixin vertical-align {
-  position: relative;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+@font-face {
+    font-family: eight-bit;
+    src: url("/stylesheets/8bit_wonder/8-BIT_WONDER.ttf");
 }

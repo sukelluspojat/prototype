@@ -37,53 +37,92 @@
           </div>
           <div class="yes"></div>
           <div class="no"></div>
-        </li>
-              	<li>
+        </li> -->
+        <!-- <li>
           <img class='picture' src='/images/image_004.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
           <div class='pictureInfo'>
             <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
           </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li>
-              	<li>
+        <li>
           <img class='picture' src='/images/image_005.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class='pictureInfo'>
-            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
-          </div>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-              	<li>
-          <img class='picture' src='/images/image_006.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class='pictureInfo'>
-            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
-          </div>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-              	<li>
-          <img class='picture' src='/images/image_007.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
           <div class='pictureInfo'>
             <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
           </div>
           <div class="yes"></div>
           <div class="no"></div>
         </li> -->
+        <li onclick="pictureClick(this)">
+          <div class="screen">
+            <img class='picture' src='/images/image_006.jpg'>
+            <!-- <img class='diveWatch' src='/images/suunto.png'> -->
+            <div class='pictureInfo'>
+              <h2>Travel Tips</h2>
+              <p>
+                American Apparel aesthetic gentrify,
+                craft beer High Life Pitchfork semiotics stumptown bespoke keytar.
+                Tousled try-hard organic, shabby chic cray iPhone Williamsburg keytar cred Intelligentsia keffiyeh
+                occupy cliche Vice. Quinoa literally tattooed, occupy selvage Neutra kitsch lomo cold-pressed beard.
+                Schlitz DIY synth, kale chips cornhole letterpress Etsy selfies tousled distillery lo-fi health
+                goth tilde put a bird on it jean shorts. Pop-up American Apparel locavore, lo-fi art party
+                mumblecore messenger bag asymmetrical crucifix distillery Williamsburg mustache semiotics
+                master cleanse stumptown.
+                <img class='diveWatch' src='/images/suunto.png'>
+                <div class="diveWatchContainer">
+                  <span><br>Excite-<br>ment<br>Level<br><br>MAX!<br></span>
+                </div>
+              </p>
+            </div>
+          </div>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
+        <li onclick="pictureClick(this)">
+          <div class="screen">
+            <img class='picture' src='/images/image_007.jpg'>
+            <!-- <img class='diveWatch' src='/images/suunto.png'> -->
+            <div class='pictureInfo'>
+              <h2>Travel Tips</h2>
+              <p>
+                American Apparel aesthetic gentrify,
+                craft beer High Life Pitchfork semiotics stumptown bespoke keytar.
+                Tousled try-hard organic, shabby chic cray iPhone Williamsburg keytar cred Intelligentsia keffiyeh
+                occupy cliche Vice. Quinoa literally tattooed, occupy selvage Neutra kitsch lomo cold-pressed beard.
+                Schlitz DIY synth, kale chips cornhole letterpress Etsy selfies tousled distillery lo-fi health
+                goth tilde put a bird on it jean shorts. Pop-up American Apparel locavore, lo-fi art party
+                mumblecore messenger bag asymmetrical crucifix distillery Williamsburg mustache semiotics
+                master cleanse stumptown.
+                <img class='diveWatch' src='/images/suunto.png'>
+                <div class="diveWatchContainer">
+                  <span><br>Depth<br><br>30-50m<br></span>
+                </div>
+              </p>
+            </div>
+          </div>
+          <div class="yes"></div>
+          <div class="no"></div>
+        </li>
       	<li onclick="pictureClick(this)">
           <div class="screen">
             <img class='picture' src='/images/image_008.jpg'>
             <!-- <img class='diveWatch' src='/images/suunto.png'> -->
             <div class='pictureInfo'>
-              <h2> Travel Tips</h2>
+              <h2>Travel Tips</h2>
               <p>
-                American Apparel aesthetic gentrify, craft beer High Life Pitchfork semiotics stumptown bespoke keytar. Tousled try-hard organic, shabby chic cray iPhone Williamsburg keytar cred Intelligentsia keffiyeh occupy cliche Vice. Quinoa literally tattooed, occupy selvage Neutra kitsch lomo cold-pressed beard. Schlitz DIY synth, kale chips cornhole letterpress Etsy selfies tousled distillery lo-fi health goth tilde put a bird on it jean shorts. Pop-up American Apparel locavore, lo-fi art party mumblecore messenger bag asymmetrical crucifix distillery Williamsburg mustache semiotics master cleanse stumptown. Fingerstache Kickstarter ethical, 8-bit chillwave fanny pack skateboard vinyl umami Marfa cray irony Schlitz roof party. Synth banh mi banjo, bespoke cred umami messenger bag.
-
+                American Apparel aesthetic gentrify,
+                craft beer High Life Pitchfork semiotics stumptown bespoke keytar.
+                Tousled try-hard organic, shabby chic cray iPhone Williamsburg keytar cred Intelligentsia keffiyeh
+                occupy cliche Vice. Quinoa literally tattooed, occupy selvage Neutra kitsch lomo cold-pressed beard.
+                Schlitz DIY synth, kale chips cornhole letterpress Etsy selfies tousled distillery lo-fi health
+                goth tilde put a bird on it jean shorts. Pop-up American Apparel locavore, lo-fi art party
+                mumblecore messenger bag asymmetrical crucifix distillery Williamsburg mustache semiotics
+                master cleanse stumptown.
                 <img class='diveWatch' src='/images/suunto.png'>
+                <div class="diveWatchContainer">
+                  <span>Air<br>30 C<br><br>Water<br>24 C</span>
+                </div>
               </p>
             </div>
           </div>
