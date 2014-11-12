@@ -1,15 +1,14 @@
-/** @jsx React.DOM */
+// quick solution for event handling problems
+var _globalIfDrag = false;
 
-var stack;
-var throwOutConfidenceBind,
+/////////////// STACK INIT
+var stack,
+  throwOutConfidenceBind,
   throwOutOffset,
   throwOutConfidenceElements = {};
 throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind');
 throwOutOffset = document.querySelector('#throw-out-offset');
 var config = {
-  // example of a throwout distance, we can deside what is the optional distance. Default is calculating
-  // distance from element and swipe start
-  // transform: function () {return 20},
   throwOutConfidence: function (offset, element) {
     throwOutOffset.innerHTML = offset;
     if (Math.abs(offset) > 200) {
@@ -27,11 +26,7 @@ throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind'),
 stack.on('throwout', function (e) {
     var parent = e.target.parentNode;
     e.throwDirection === 1 ? (function() {console.log("accepted")})() : (function() {console.log("decline")})();
-    console.log(e);
     parent.removeChild(e.target);
-
-    // e.target.classList.remove('in-deck');
-    // e.target.classList.add('hidden');
 });
 
 stack.on('dragmove', function (e) {
@@ -40,46 +35,48 @@ stack.on('dragmove', function (e) {
   throwOutConfidenceBind.innerHTML = e.throwOutConfidence.toFixed(2);
 });
 stack.on('dragstart', function (e) {
-  console.log("drag start");
+  console.log("drag start stack");
   throwOutConfidenceElements.yes = e.target.querySelector('.yes').style;
   throwOutConfidenceElements.no = e.target.querySelector('.no').style;
 
 
 });
 stack.on('dragend', function (e) {
-  pictureClick(e.target);
+  console.log("drag end stack");
+  _globalIfDrag = true;
   if (e.throwOutConfidence != 1) {
       throwOutConfidenceElements.yes.opacity = 0;
       throwOutConfidenceElements.no.opacity = 0;
   }
 });
-
-document.onkeydown = function(e) {
-  // left key for decline
-  if (e.keyCode === 37) {
-    removeFromStack(gajus.Swing.Card.DIRECTION_LEFT);
-    console.log('declineKey');
-  }
-  // right key for accept
-  else if (e.keyCode === 39) {
-    removeFromStack(gajus.Swing.Card.DIRECTION_RIGHT);
-    console.log('acceptedKey');
-  }
-};
-
-var removeFromStack = function(direction) {
-  var pictures, picture;
-  pictures = document.querySelectorAll(".in-deck");
-  if (pictures.length > 0) {
-    picture = stack.getCard(pictures.item(pictures.length - 1));
-    picture.throwOut(direction, 0);
-  }
-  else {
-    // DO STUFF to load more pictures etc.
-  }
-
-}
 document.addEventListener('DOMContentLoaded', function () {
+
+
+    document.onkeydown = function(e) {
+      // left key for decline
+      if (e.keyCode === 37) {
+        removeFromStack(gajus.Swing.Card.DIRECTION_LEFT);
+        console.log('declineKey');
+      }
+      // right key for accept
+      else if (e.keyCode === 39) {
+        removeFromStack(gajus.Swing.Card.DIRECTION_RIGHT);
+        console.log('acceptedKey');
+      }
+    };
+
+    var removeFromStack = function(direction) {
+      var pictures, picture;
+      pictures = document.querySelectorAll(".in-deck");
+      if (pictures.length > 0) {
+        picture = stack.getCard(pictures.item(pictures.length - 1));
+        picture.throwOut(direction, 0);
+      }
+      else {
+        // DO STUFF to load more pictures etc.
+      }
+
+    }
 });
 
 var UpdateStack = function() {
@@ -89,16 +86,39 @@ var UpdateStack = function() {
   });
 }
 
+function pictureClick(element) {
+  var display,
+      infoElements = element.querySelectorAll(".pictureInfo");
+  // console.log(element);
+  // element.handleDragEnd;
+  infoElements[0].style.display === 'none' ? display = 'block' : display = 'none';
+  infoElements[0].style.display = display;
+  console.log(infoElements[0]);
+}
 
-// function pictureClick(element) {
-//   var display,
-//       watchElements = element.querySelectorAll(".diveWatch"),
-//       infoElements = element.querySelectorAll(".pictureInfo");
-//   watchElements[0].style.display === '' ? display = 'block' : display = '';
-//   watchElements[0].style.display = display;
-//   console.log(watchElements);
-//   // infoElements[0].style.display = display;
-// }
+/////////////////////// REACT PART
+var WatchText = React.createClass({
+  render: function() {
+    return (<span dangerouslySetInnerHTML={{__html: this.props.data}}></span>);
+  }
+})
+
+var PictureInfo = React.createClass({
+  render: function() {
+    console.log(this.props.data);
+    return (
+      <div className = 'pictureInfo' style={ this.props.styleObj }>
+        <h2>{ this.props.data.infoHeading }</h2>
+        <p>{ this.props.data.infoText }</p>
+        <Picture url = {this.props.data.watchUrl} cName='diveWatch' />
+        <div className='diveWatchContainer'>
+          <WatchText data={this.props.data.watchText} />
+        </div>
+      </div>
+    );
+  }
+})
+
 var Picture = React.createClass({
   render: function() {
     return (
@@ -106,17 +126,34 @@ var Picture = React.createClass({
     );
   }
 })
+
 var PictureSet = React.createClass({
   handleClick: function(event) {
-    console.log(event.target);
+    if (_globalIfDrag === false) {
+        this.state.styleObj.display === 'none' ?
+          this.setState({ styleObj: { display: 'block' } }) : this.setState({ styleObj: { display: 'none' } });
+    }
+    else {_globalIfDrag = false;}
+
+  },
+  handleDragEnd: function(e) { console.log("dragend"); },
+  componentDidMount: function() {
+  },
+  componentWillUnmount: function() {
+    console.log("unmount");
+  },
+  getInitialState: function() {
+      return { styleObj: { display: 'none'} };
   },
   render: function() {
     return (
-      <li onClick={ this.handleClick }>
+      <li onClick={ this.handleClick } onDragEnd={ this.handleDragEnd }>
+        <div className='screen'>
+          <Picture url={ this.props.data.url } cName="picture"/>
+          <PictureInfo data={ this.props.data } styleObj={ this.state.styleObj } />
+        </div>
         <div className="yes"></div>
         <div className="no"></div>
-        <Picture url={ this.props.data.url } cName="picture"/>
-        <Picture url={ this.props.data.watchUrl } cName="diveWatch" />
       </li>
     );
   }
@@ -138,7 +175,7 @@ var Pictures = React.createClass({
   getInitialState: function() {
         console.log("init");
         return { data: [] };
-    },
+  },
   componentWillMount: function() {
       this.loadPicturesFromServer();
   },

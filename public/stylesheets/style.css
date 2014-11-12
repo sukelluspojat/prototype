@@ -1,6 +1,8 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-image: url("/images/modify-truck-010.jpg");
+  background-size: cover;
 }
 
 a {
@@ -8,24 +10,29 @@ a {
 }
 
 #viewport {
-  width: 500px;
-  height: 700px;
-  border-style: solid;
-  border-color: black;
+  width: 379px;
+  height: 742px;
+  /* border-style: solid;
+  border-color: black; */
   position: relative;
   margin-left: 400px;
+  margin-top: -100px;
+  background-image: url('/images/iphone4b.png');
+  background-size: cover;
 }
 
 #viewport li{
-  width: 480px;
-  height: 680px;
-  margin: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding-top: 34.5%;
+  padding-bottom: 34.0%;
+  padding-left: 8.3%;
+  padding-right: 7.5%;
   top: 0;
   left: 0;
   position: absolute;
-  z-index: 999;
   border-radius: 20px;
-  /* overflow: scroll;  this is needed if we add text info on the bottom*/
 }
 #viewport ul {
   list-style-type: none;
@@ -37,6 +44,66 @@ a {
   height: 100%;
   z-index: -999;
 }
+.screen {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: black;
+}
+
+.diveWatch {
+  /*   position: absolute;
+  height: 100px;
+  width: 100px;
+  bottom: 0;
+  left: 0;
+  z-index: 0 !important;
+  display: none; */
+  height: 150px;
+  width: 150px;
+  float: left;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+}
+.diveWatchContainer {
+  box-sizing: border-box;
+  height: 150px;
+  width: 150px;
+  padding-left: 35px;
+  padding-top: 45px;
+  padding-right: 35px;
+  padding-bottom: 40px;
+
+  position: relative
+}
+.diveWatchContainer span {
+  position: absolute;
+  font-family: eight-bit;
+  color: #2c2c2c;
+  text-align: center;
+  font-size: 0.6em;
+  width: 50%;
+}
+.pictureInfo {
+  /* display: none; */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: auto;
+  /* box-sizing: border-box; */
+  /* width: 100% !important; */
+  /* background-color: black; */
+  color: white;
+  background-color: rgba(18, 18, 18, 0.7);
+  /* padding: 30px; */
+}
+
+
 
 .hidden {
   display: none !important;
@@ -55,29 +122,17 @@ body {
   opacity: 0;
   width: 100%;
   height: 100%;
-  border-radius: 20px;
+  border-radius: 70px;
 }
 
-.diveWatch {
-  position: absolute;
-  height: 150px;
-  width: 150px;
-  bottom: 0;
-  left: 0;
-  z-index: 0 !important;
-  display: none;
-}
-.pictureInfo {
-  display: none;
-  box-sizing: border-box;
-  width: 100% !important;
-  background-color: black;
-  color: white;
-  padding: 30px;
-}
 
 .no {
   background: #CF000F; }
 
 .yes {
   background: #1E824C; }
+
+@font-face {
+    font-family: eight-bit;
+    src: url("/stylesheets/8bit_wonder/8-BIT_WONDER.ttf");
+}

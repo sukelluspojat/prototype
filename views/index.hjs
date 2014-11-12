@@ -13,61 +13,6 @@
     <p><code>throwOutConfidence</code> (<code id="throw-out-confidence-bind">0</code>)</p>
     <p><code>offset</code> (<code id="throw-out-offset">0</code>) </p>
     <div id="container"></div>
-    <!-- <div id='viewport'>
-      <ul class="stack">
-        <li>
-          <img class='picture'src='/images/image_001.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-      	<li>
-          <img class='picture' src='/images/image_002.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-      	<li>
-          <img class='picture' src='/images/image_003.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-      	<li>
-          <img class='picture' src='/images/image_004.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-      	<li>
-          <img class='picture' src='/images/image_005.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-      	<li>
-          <img class='picture' src='/images/image_006.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-      	<li>
-          <img class='picture' src='/images/image_007.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-      	<li onclick="pictureClick(this)">
-          <img class='picture' src='/images/image_008.jpg'>
-          <img class='diveWatch' src='/images/suunto.png'>
-          <div class='pictureInfo'>
-            <span> TEXT TETXTETAFAFKASKFASPFAPKFASP</span>
-          </div>
-          <div class="yes"></div>
-          <div class="no"></div>
-        </li>
-      </ul>
     </div>
-     -->
   </body>
 </html>
