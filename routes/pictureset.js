@@ -6,13 +6,17 @@ var router = express.Router();
 //--------------------------------------
 // var mongo = require('mongodb');
 // var monk = require('monk');
-// var db = monk('localhost:27017/testDB');
+// var db = monk('localhost:27017/prototypeDB');
 //--------------------------------------
 
 // var db = req.db;
 // var pictures = db.get('Picture'); //collection name 'Picture'
 // var pictureIDs = pictures.find({}, {fields:['_id']}).toArray(); //test this firstChild
-// [id, asked] //asked from user
+// console.log('unshuffled picture IDs:');
+// console.log(pictureIDs);
+
+
+// var usedPictures = []; //already asked from user ('_id')
 
 //shuffle pictureIDs to get a random order
 
