@@ -1,7 +1,8 @@
 // quick solution for event handling problems
 var _globalIfDrag = false;
-
-/////////////// STACK INIT
+/////////////////////////////////////////////
+/////////////// STACK INIT ///////////////
+/////////////////////////////////////////////
 var stack,
   throwOutConfidenceBind,
   throwOutOffset,
@@ -49,54 +50,45 @@ stack.on('dragend', function (e) {
       throwOutConfidenceElements.no.opacity = 0;
   }
 });
-document.addEventListener('DOMContentLoaded', function () {
+/////////////////////////////////////////////////////////////////////
+/////////////////////// Helper functions ///////////////////////
+/////////////////////////////////////////////////////////////////////
+document.onkeydown = function(e) {
+  // left key for decline
+  if (e.keyCode === 37) {
+    removeFromStack(gajus.Swing.Card.DIRECTION_LEFT);
+    console.log('declineKey');
+  }
+  // right key for accept
+  else if (e.keyCode === 39) {
+    removeFromStack(gajus.Swing.Card.DIRECTION_RIGHT);
+    console.log('acceptedKey');
+  }
+};
 
+var removeFromStack = function(direction) {
+  var pictures, picture;
+  pictures = document.querySelectorAll(".in-deck");
+  if (pictures.length > 0) {
+    picture = stack.getCard(pictures.item(pictures.length - 1));
+    picture.throwOut(direction, 0);
+  }
+  else {
+    // DO STUFF to load more pictures etc.
+  }
 
-    document.onkeydown = function(e) {
-      // left key for decline
-      if (e.keyCode === 37) {
-        removeFromStack(gajus.Swing.Card.DIRECTION_LEFT);
-        console.log('declineKey');
-      }
-      // right key for accept
-      else if (e.keyCode === 39) {
-        removeFromStack(gajus.Swing.Card.DIRECTION_RIGHT);
-        console.log('acceptedKey');
-      }
-    };
-
-    var removeFromStack = function(direction) {
-      var pictures, picture;
-      pictures = document.querySelectorAll(".in-deck");
-      if (pictures.length > 0) {
-        picture = stack.getCard(pictures.item(pictures.length - 1));
-        picture.throwOut(direction, 0);
-      }
-      else {
-        // DO STUFF to load more pictures etc.
-      }
-
-    }
-});
+}
 
 var UpdateStack = function() {
+  // update stack
   [].forEach.call(document.querySelectorAll('.stack li'), function (targetElement) {
       stack.createCard(targetElement);
       targetElement.classList.add('in-deck');
   });
 }
-
-function pictureClick(element) {
-  var display,
-      infoElements = element.querySelectorAll(".pictureInfo");
-  // console.log(element);
-  // element.handleDragEnd;
-  infoElements[0].style.display === 'none' ? display = 'block' : display = 'none';
-  infoElements[0].style.display = display;
-  console.log(infoElements[0]);
-}
-
-/////////////////////// REACT PART
+/////////////////////////////////////////////////////////////////////
+/////////////////////// REACT PART ///////////////////////
+/////////////////////////////////////////////////////////////////////
 var WatchText = React.createClass({
   render: function() {
     return (<span dangerouslySetInnerHTML={{__html: this.props.data}}></span>);
