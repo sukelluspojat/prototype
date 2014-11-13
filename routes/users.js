@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+var dummyCounter = 1;
 /* GET users listing. */
 router.get('/', function(req, res) {
   res.json(
@@ -10,7 +11,7 @@ router.get('/', function(req, res) {
       vacationInfo: 0,
       data: [
       {
-          "id" : 1,
+          "id" : 1 * dummyCounter,
           "url": "/images/image_001.jpg",
           "infoHeading": "Some Heading",
           "infoText": "American Apparel aesthetic gentrify, " +
@@ -30,7 +31,7 @@ router.get('/', function(req, res) {
           ]
       },
       {
-          "id" : 2,
+          "id" : 2 * dummyCounter,
           "url": "/images/image_002.jpg",
           "infoHeading": "Some Heading",
           "infoText": "American Apparel aesthetic gentrify, " +
@@ -50,7 +51,7 @@ router.get('/', function(req, res) {
           ]
       },
       {
-          "id" : 3,
+          "id" : 3 * dummyCounter,
           "url": "/images/image_003.jpg",
           "infoHeading": "Some Heading",
           "infoText": "American Apparel aesthetic gentrify, " +
@@ -70,6 +71,11 @@ router.get('/', function(req, res) {
           ]
       }
   ]});
+  dummyCounter += 1;
+});
+
+router.post('/', function(req, res) {
+  res.json( { data: "success" });
 });
 
 module.exports = router;

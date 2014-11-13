@@ -2,6 +2,7 @@
 var _globalIfDrag = false;
 
 var SukellusSession = {
+  screenContainer: {},
   stackElement: [],
   dataSet:  [],
   acceptedTags: [],
@@ -36,14 +37,15 @@ stack.on('throwout', function (e) {
     // the last react componen on the list
     lastIndex = SukellusSession.stackElement.length - 1;
     handleTag(SukellusSession.stackElement[lastIndex].props.data.tags, e.throwDirection);
+    console.log(lastIndex);
     if (lastIndex === 0) {
-      SukellusSession.stackElement[0].handleEmptySet();
+      SukellusSession.screenContainer.handleEmptySet();
     }
     // Use tags
     // check if last element -> let the server decide what to send next
+    SukellusSession.stackElement.pop();
     parent = e.target.parentNode;
-
-    parent.removeChild(e.target);
+    e.target.style.display = 'none';
 });
 
 stack.on('dragmove', function (e) {
@@ -187,17 +189,21 @@ var PictureSet = React.createClass({
         </div>
         <div className="yes"></div>
         <div className="no"></div>
+        <svg height="120" width="320">
+          <circle cx="160" cy="63" r="34" stroke="black" strokeWidth="3" fill="transparent" />
+        </svg>
       </li>
     );
   }
 })
 var ScreenContent = React.createClass({
-  loadDataFromServer: function() {
+  loadDataFromServer: function(url) {
     $.ajax({
-        url: this.props.url,
+        url: url,
         dataType: 'json',
         success: function(data) {
           this.setState({data: data});
+          console.log(data);
           console.log("ajax GET");
         }.bind(this),
         error: function(error) {
@@ -206,6 +212,7 @@ var ScreenContent = React.createClass({
     });
   },
   handleEmptySet: function() {
+    console.log("handleEmptySet");
     //post tags to server
     $.ajax({
         url: this.props.url,
@@ -213,10 +220,10 @@ var ScreenContent = React.createClass({
         dataType: 'json',
         data: {
           accepted: SukellusSession.acceptedTags,
-          declined: SukellusSession.declinedTags 
+          declined: SukellusSession.declinedTags
         },
         success: function(data) {
-          this.loadDataFromServer();
+          this.loadDataFromServer('/users');
           console.log("ajax POST");
         }.bind(this),
         error: function(error) {
@@ -229,12 +236,15 @@ var ScreenContent = React.createClass({
         return { data: null };
   },
   componentWillMount: function() {
-      this.loadDataFromServer();
+      this.loadDataFromServer(this.props.url);
+      SukellusSession.screenContainer = this;
   },
   componentDidUpdate: function() {
+    console.log("DidUpdate");
     UpdateStack();
   },
   render: function() {
+    console.log("render");
     var dataType = this.state.data;
     if (dataType === null) {
       return (
