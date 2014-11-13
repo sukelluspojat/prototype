@@ -70,11 +70,6 @@ a {
   box-sizing: border-box;
   height: 150px;
   width: 150px;
-  padding-left: 35px;
-  padding-top: 45px;
-  padding-right: 35px;
-  padding-bottom: 40px;
-
   position: relative
 }
 .diveWatchContainer span {
@@ -83,7 +78,11 @@ a {
   color: #2c2c2c;
   text-align: center;
   font-size: 0.6em;
-  width: 50%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  padding-left: 33px; 
+  height: 75px;
+  width: 75px;
 }
 .pictureInfo {
   /* display: none; */
