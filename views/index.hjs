@@ -12,6 +12,7 @@
   <body id='body'>
     <p><code>throwOutConfidence</code> (<code id="throw-out-confidence-bind">0</code>)</p>
     <p><code>offset</code> (<code id="throw-out-offset">0</code>) </p>
+    <p> Tags: <span id="tags"></span> </p>
     <div id="container"></div>
     </div>
   </body>

@@ -1,5 +1,12 @@
 // quick solution for event handling problems
 var _globalIfDrag = false;
+
+var SukellusSession = {
+  stackElement: [],
+  dataSet:  [],
+  acceptedTags: [],
+  declinedTags: []
+}
 /////////////////////////////////////////////
 /////////////// STACK INIT ///////////////
 /////////////////////////////////////////////
@@ -25,8 +32,17 @@ throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind'),
 
 
 stack.on('throwout', function (e) {
-    var parent = e.target.parentNode;
-    e.throwDirection === 1 ? (function() {console.log("accepted")})() : (function() {console.log("decline")})();
+    var lastIndex, parent, direction;
+    // the last react componen on the list
+    lastIndex = SukellusSession.stackElement.length - 1;
+    handleTag(SukellusSession.stackElement[lastIndex].props.data.tags, e.throwDirection);
+    if (lastIndex === 0) {
+      SukellusSession.stackElement[0].handleEmptySet();
+    }
+    // Use tags
+    // check if last element -> let the server decide what to send next
+    parent = e.target.parentNode;
+
     parent.removeChild(e.target);
 });
 
@@ -53,6 +69,30 @@ stack.on('dragend', function (e) {
 /////////////////////////////////////////////////////////////////////
 /////////////////////// Helper functions ///////////////////////
 /////////////////////////////////////////////////////////////////////
+
+var handleTag = function(tags, direction) {
+  if (direction === 1) {
+    //accepted
+    for (var i=0;i<tags.length; i++) {
+      if (SukellusSession.acceptedTags.indexOf(tags[i]) === -1) {
+        SukellusSession.acceptedTags.push(tags[i]);
+        break;
+      }
+    }
+  }
+  else {
+    //declined
+    for (var i=0;i<tags.length; i++) {
+      if (SukellusSession.declinedTags.indexOf(tags[i]) === -1) {
+        SukellusSession.declinedTags.push(tags[i]);
+        break;
+      }
+    }
+  }
+  document.getElementById("tags").innerHTML = "Accepted: " + SukellusSession.acceptedTags +
+                                              "<br>Declined: " + SukellusSession.declinedTags;
+}
+
 document.onkeydown = function(e) {
   // left key for decline
   if (e.keyCode === 37) {
@@ -126,10 +166,11 @@ var PictureSet = React.createClass({
           this.setState({ styleObj: { display: 'block' } }) : this.setState({ styleObj: { display: 'none' } });
     }
     else {_globalIfDrag = false;}
-
   },
   handleDragEnd: function(e) { console.log("dragend"); },
   componentDidMount: function() {
+    console.log("component mounted");
+    SukellusSession.stackElement.push(this);
   },
   componentWillUnmount: function() {
     console.log("unmount");
@@ -139,7 +180,7 @@ var PictureSet = React.createClass({
   },
   render: function() {
     return (
-      <li onClick={ this.handleClick } onDragEnd={ this.handleDragEnd }>
+      <li onClick={ this.handleClick } onDragStart={ this.handleDragEnd }>
         <div className='screen'>
           <Picture url={ this.props.data.url } cName="picture"/>
           <PictureInfo data={ this.props.data } styleObj={ this.state.styleObj } />
@@ -150,14 +191,33 @@ var PictureSet = React.createClass({
     );
   }
 })
-var Pictures = React.createClass({
-  loadPicturesFromServer: function() {
+var ScreenContent = React.createClass({
+  loadDataFromServer: function() {
     $.ajax({
         url: this.props.url,
         dataType: 'json',
         success: function(data) {
           this.setState({data: data});
-          console.log("ajax");
+          console.log("ajax GET");
+        }.bind(this),
+        error: function(error) {
+          console.log(error);
+        }.bind(this)
+    });
+  },
+  handleEmptySet: function() {
+    //post tags to server
+    $.ajax({
+        url: this.props.url,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          accepted: SukellusSession.acceptedTags,
+          declined: SukellusSession.declinedTags 
+        },
+        success: function(data) {
+          this.loadDataFromServer();
+          console.log("ajax POST");
         }.bind(this),
         error: function(error) {
           console.log(error);
@@ -166,25 +226,61 @@ var Pictures = React.createClass({
   },
   getInitialState: function() {
         console.log("init");
-        return { data: [] };
+        return { data: null };
   },
   componentWillMount: function() {
-      this.loadPicturesFromServer();
+      this.loadDataFromServer();
   },
   componentDidUpdate: function() {
     UpdateStack();
   },
   render: function() {
-    var data = this.state.data;
-    console.log(this.state.data);
-    var pictures = data.map(function(data) {
-      return <PictureSet data={ data } key={ data.id } />;
-    });
-    return (
-      <ul className = "stack">
-        { pictures }
-      </ul>
-    );
+    var dataType = this.state.data;
+    if (dataType === null) {
+      return (
+        <div className='screenContainer'>
+        </div>
+      );
+    }
+    else if (dataType.picture === 1) {
+      var pictureData = dataType.data;
+      var pictures = pictureData.map(function(data) {
+        return <PictureSet data={ data } key={ data.id } />;
+      });
+      return (
+        <ul className = "stack">
+          { pictures }
+        </ul>
+      );
+    }
+    else if ( dataType.vacationList === 1) {
+      // DO STUFF
+      return (
+        <div className='screenContainer'>
+          <div className='screen'>
+          </div>
+        </div>
+      );
+
+    }
+    else if ( dataType.vacationInfo === 1) {
+      // DO STUFF
+      return (
+        <div className='screenContainer'>
+          <div className='screen'>
+          </div>
+        </div>
+      );
+    }
+    else {
+      return (
+        <div className='screenContainer'>
+          <div className='screen'>
+          </div>
+        </div>
+      );
+    }
+
   }
 })
 
@@ -193,7 +289,7 @@ var Viewport = React.createClass({
       console.log("viewport");
         return (
             <div id = "viewport">
-                <Pictures url={this.props.url} />
+                <ScreenContent url={this.props.url} />
             </div>
         );
     }

@@ -3,7 +3,12 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res) {
-  res.json([
+  res.json(
+    {
+      picture: 1,
+      vacationList: 0,
+      vacationInfo: 0,
+      data: [
       {
           "id" : 1,
           "url": "/images/image_001.jpg",
@@ -60,11 +65,11 @@ router.get('/', function(req, res) {
           "watchText": "Air<br>30 C<br><br>Water<br>24 C",
           "tags": [
               "hot",
-              "baar",
+              "bar",
               "friends"
           ]
       }
-  ]);
+  ]});
 });
 
 module.exports = router;
