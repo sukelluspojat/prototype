@@ -17,7 +17,17 @@ module.exports = function(db) {
 	
 	
 	//--------------------------------------------
+	// Results in something like:
 	// res.randomIdOrder: Array[object]
+	// =   [ 54655bf459ae3eafbced8a50,
+		  // 5465be67a4c80c8d8ece26e8,
+		  // 54655ca4c5b739c41127fe5a,
+		  // 5465be67a4c80c8d8ece26ea,
+		  // 54655bf659ae3eafbced8a51,
+		  // 5465be67a4c80c8d8ece26e7,
+		  // 5465be67a4c80c8d8ece26e9,
+		  // 5465be69a4c80c8d8ece26eb,
+		  // 54655bf859ae3eafbced8a52 ]
 	// Get all picture '_id':s from DB and shuffle them. Order to res.
 	exports.initRandomPictures = function(req, res) {
 		console.log('at initRandomPictures');
@@ -35,10 +45,8 @@ module.exports = function(db) {
 		n = req.query.numberOfPictures;
 		order = req.query.randomIdOrder;
 		var ret = [];
-		// DO STUFF
-		
 		// pick smaller: n, order.length
-		
+		// (run out of pics before enough)
 		var index = 0;
 		var pickLimit = Math.min(n, order.length);
 
@@ -70,6 +78,7 @@ module.exports = function(db) {
 	// Get 'req.query.numberOfPictures' random pictures from DB
 	// so that each picture has at least one tag from array 'allowedTags'.
 	exports.getRandomPicturesWithAllowedTags = function(req, res) {
+		//CURRENTLY DOES NOT TAKE TAG LIST INTO ACCOUNT!!!
 		console.log('at getRandomPictures');
 		n = req.query.numberOfPictures;
 		order = req.query.randomIdOrder;
@@ -78,9 +87,35 @@ module.exports = function(db) {
 		// DO STUFF
 		// like getRandomPictures, but if first _id from order has no tag from tags just remove it and continue with next.
 		// other note: cannot pick smaller of order.length and n to while loop end limit
-		// according to current algorithm, we never return back to pictures that have once been skipped.
+		// according to current algorithm, we never return back to pictures that have once been skipped. -> Just discard from 'order' array.
 		
-		//res.json();
+		var ret = [];
+		// pick smaller: n, order.length
+		// (run out of pics before enough)
+		var indexCount = 0;
+		var foundCount = 0;
+		
+		async.whilst(function() {
+			return indexCount < order.length && foundCount < n;
+		},
+		function(next) {
+			// get DB document with first '_id' from array 'order'
+			// append it somewhere (array?)
+			// remove first _id from order
+			
+			pictures.findOne({_id: order.pop()},{}, 
+				function(err, document) {
+					ret.push(document);
+					//console.log(document);
+				});
+			
+			indexCount = indexCount + 1;
+			foundCount = foundCount + 1;
+			next();
+		},
+		function(err) {
+			res.send({documentArrayJson: ret, randomIdOrder: order});
+		});
 	}		
 	//--------------------------------------------
 	
