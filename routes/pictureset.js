@@ -28,18 +28,18 @@ module.exports = function(db) {
 		  // 5465be69a4c80c8d8ece26eb,
 		  // 54655bf859ae3eafbced8a52 ]
 	// Get all picture '_id':s from DB and shuffle them. Order to res.
-	function initRandomPictures(req, res) {
+	function getRandomOrder() {
 		// var picturesDb = db.get('Picture');
-
-		console.log('at initRandomPictures');
-    try {
-      picturesDb.find({},{fields:{_id:1}}, function(e,docs) {
-        res.send({randomIdOrder: shuffle(_.map(docs, function(entry){ return entry['_id']; })), numberOfPictures: req.query.numberOfPictures});
-      });
-    }
-    catch (err) {
-      console.log(err);
-    }
+		console.log('at getRandomOrder()');
+		try {
+			return picturesDb.find({},{fields:{_id:1}}, function(e,docs) {
+				randomOrder = shuffle(_.map(docs, function(entry){ return entry['_id']; })); });
+				return randomOrder;
+		  });
+		}
+		catch (err) {
+		  console.log(err);
+		}
 
 
 	}
@@ -48,11 +48,12 @@ module.exports = function(db) {
 
 	exports.getRandomPictures = function(req, res) {
 		if (typeof req.query.randomIdOrder !== 'object') {
-      console.log(req.query);
-			exports.getRandomPicturesWithOrder(initRandomPictures(req, res), res);
+			console.log(req.query);
+			res.json(getRandomPicturesWithOrder(getRandomOrder(), req.query.numberOfPictures));
 		}
 		else {
-			exports.getRandomPicturesWithOrder(req, res);
+			console.log(req.query);
+			res.json(getRandomPicturesWithOrder(req.query.randomIdOrder, req.query.numberOfPictures));
 		}
 	}
 
@@ -60,13 +61,11 @@ module.exports = function(db) {
 
 	//--------------------------------------------
 	// Get 'req.query.numberOfPictures' random picturesDb from DB.
-	exports.getRandomPicturesWithOrder = function(req, res) {
+	function getRandomPicturesWithOrder(order, n) {
 		// var picturesDb = db.get('Picture');
 
 		console.log('at getRandomPicturesWithOrder');
-    n = req.query.numberOfPictures;
-		order = req.query.randomIdOrder;
-    console.log(order);
+		console.log(order);
 		var ret = [];
 		// pick smaller: n, order.length
 		// (run out of pics before enough)
@@ -80,23 +79,23 @@ module.exports = function(db) {
 			// get DB document with first '_id' from array 'order'
 			// append it somewhere (array?)
 			// remove first _id from order
-      try {
-        picturesDb.findOne({_id: order.pop()},{},
-          function(err, document) {
-            ret.push(document);
-            //console.log(document);
-          });
+			try {
+				picturesDb.findOne({_id: order.pop()},{},
+				function(err, document) {
+					ret.push(document);
+					//console.log(document);
+				});
 
-        index = index + 1;
-        next();
-      }
-      catch (err) {
-        console.log(err);
-      }
+				index = index + 1;
+				next();
+			}
+			catch (err) {
+				console.log(err);
+			}
 
 		},
 		function(err) {
-			res.send({documentArrayJson: ret, randomIdOrder: order});
+			return ret;
 		});
 	}
 	//--------------------------------------------
