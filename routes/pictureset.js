@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var async = require('async');
 
 //------------------------------------------
 //+ Jonas Raoni Soares Silva
@@ -40,8 +41,11 @@ module.exports = function(db) {
 		
 		var index = 0;
 		var pickLimit = Math.min(n, order.length);
-		while (index < picked) {
-			
+
+		async.whilst(function() {
+			return index < pickLimit;
+		},
+		function(next) {
 			// get DB document with first '_id' from array 'order'
 			// append it somewhere (array?)
 			// remove first _id from order
@@ -53,10 +57,11 @@ module.exports = function(db) {
 				});
 			
 			index = index + 1;
-		}
-		
-		//ASYNC??!?!?!?!?!!?
-		res.send({documentArrayJson: ret, randomIdOrder: order});
+			next();
+		},
+		function(err) {
+			res.send({documentArrayJson: ret, randomIdOrder: order});
+		});
 	}
 	//--------------------------------------------
 
