@@ -13,7 +13,6 @@ function shuffle(o){ //v1.0
 
 module.exports = function(db) {
 	var exports = {};
-	var pictures = db.get('Picture');
 	
 	
 	//--------------------------------------------
@@ -30,6 +29,8 @@ module.exports = function(db) {
 		  // 54655bf859ae3eafbced8a52 ]
 	// Get all picture '_id':s from DB and shuffle them. Order to res.
 	exports.initRandomPictures = function(req, res) {
+		var pictures = db.get('Picture');
+		
 		console.log('at initRandomPictures');
 		pictures.find({},{fields:{_id:1}}, function(e,docs) {
 			res.send({randomIdOrder: shuffle(_.map(docs, function(entry){ return entry['_id']; })) });
@@ -40,7 +41,9 @@ module.exports = function(db) {
 	
 	//--------------------------------------------
 	// Get 'req.query.numberOfPictures' random pictures from DB.
-	exports.getRandomPictures = function(req, res) {
+	exports.getRandomPictures = function(req, res) {	
+		var pictures = db.get('Picture');
+		
 		console.log('at getRandomPictures');
 		n = req.query.numberOfPictures;
 		order = req.query.randomIdOrder;
@@ -78,7 +81,8 @@ module.exports = function(db) {
 	// Get 'req.query.numberOfPictures' random pictures from DB
 	// so that each picture has at least one tag from array 'allowedTags'.
 	exports.getRandomPicturesWithAllowedTags = function(req, res) {
-		//CURRENTLY DOES NOT TAKE TAG LIST INTO ACCOUNT!!!
+		var pictures = db.get('Picture');
+		
 		console.log('at getRandomPictures');
 		n = req.query.numberOfPictures;
 		order = req.query.randomIdOrder;
@@ -105,12 +109,15 @@ module.exports = function(db) {
 			
 			pictures.findOne({_id: order.pop()},{}, 
 				function(err, document) {
-					ret.push(document);
+					if(_.intersection(tags, document.tags).length > 0) {
+						//if tag lists have non-empty intersection, then: 
+						ret.push(document);
+						foundCount = foundCount + 1;
+					}
 					//console.log(document);
 				});
 			
 			indexCount = indexCount + 1;
-			foundCount = foundCount + 1;
 			next();
 		},
 		function(err) {
