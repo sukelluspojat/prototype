@@ -138,6 +138,14 @@ var WatchText = React.createClass({
   }
 })
 /////////////////////// PICTURE ELEMENTS ///////////////////////
+var Picture = React.createClass({
+  render: function() {
+    return (
+      <img src={ this.props.url } className = { this.props.cName }></img>
+    );
+  }
+})
+
 var PictureInfo = React.createClass({
   render: function() {
     console.log(this.props.data);
@@ -150,14 +158,6 @@ var PictureInfo = React.createClass({
           <WatchText data={this.props.data.watchText} />
         </div>
       </div>
-    );
-  }
-})
-
-var Picture = React.createClass({
-  render: function() {
-    return (
-      <img src={ this.props.url } className = { this.props.cName }></img>
     );
   }
 })
@@ -202,26 +202,27 @@ var PictureSet = React.createClass({
 /////////////////////// VACATION LIST ELEMENTS ///////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var VacationListElement = React.createClass({
+var VacationPicture = React.createClass({
   render: function() {
     return(
-      <div className={'vacatonListElement'}>
-        <h3>{ this.props.data.infoHeading }</h3>
-        <p>{ this.props.data.infoText }</p>
-      </div>
+      <img src={ this.props.url } className={'vacationPicture'}> </img>
     );
   }
 });
-var VacationList = React.createClass({
+
+var VacationElement = React.createClass({
   render: function() {
+    var pictureUrls = this.props.data.pictureUrls.map(function(url) {
+      return <VacationPicture url={ url } />
+    });
     return(
-      <li onClick={ this.handleClick } className='vacationList'>
-        <div className='screen'>
-          <VacationListElement data={ this.props.data } />
-          <div className="yes"></div>
-          <div className="no"></div>
+      <div className={ 'vacatonListElement' }>
+        <h3>{ this.props.data.infoHeading }</h3>
+        <p>{ this.props.data.infoText }</p>
+        <div className={ 'VacationPictureSet' }>
+          { pictureUrls }
         </div>
-      </li>
+      </div>
     );
   }
 });
@@ -300,13 +301,15 @@ var ScreenContent = React.createClass({
     }
     else if ( dataType.vacationList === 1) {
       // DO STUFF
-      var vacationElements = data.map(function(data) {
-        return <VacationList data={ data } key={ data.id } />;
-      });
+      // var vacationElements = data.map(function(data) {
+      //   return <VacationList data={ data } key={ data.id } />;
+      // });
       return (
-        <ul className = "stackVacation stackBinder">
-          { vacationElements }
-        </ul>
+        <div className='screenContainer'>
+          <div className='screen'>
+            <VacationElement data={ data } />
+          </div>
+        </div>
       );
 
     }

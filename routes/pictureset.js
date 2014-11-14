@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var async = require('async');
+var q = require('q');
 
 //------------------------------------------
 //+ Jonas Raoni Soares Silva
@@ -29,13 +30,23 @@ module.exports = function(db) {
 		  // 54655bf859ae3eafbced8a52 ]
 	// Get all picture '_id':s from DB and shuffle them. Order to res.
 	function getRandomOrder() {
+    var order;
 		// var picturesDb = db.get('Picture');
 		console.log('at getRandomOrder()');
 		try {
-			return picturesDb.find({},{fields:{_id:1}}, function(e,docs) {
-				randomOrder = shuffle(_.map(docs, function(entry){ return entry['_id']; })); });
-				return randomOrder;
-		  });
+			return picturesDb.find({},{fields:{_id:1}},
+        function(e,docs) {
+				      randomOrder = shuffle(
+                _.map(docs,
+                  function(entry){
+                    return entry['_id'];
+                  }
+                )
+              );
+          return order;
+        }
+      );
+
 		}
 		catch (err) {
 		  console.log(err);
@@ -47,12 +58,26 @@ module.exports = function(db) {
 
 
 	exports.getRandomPictures = function(req, res) {
+    var x, queryParam, y;
 		if (typeof req.query.randomIdOrder !== 'object') {
-			console.log(req.query);
-			res.json(getRandomPicturesWithOrder(getRandomOrder(), req.query.numberOfPictures));
+      queryParam = req.query.numberOfPictures;
+      try {
+        y = getRandomOrder().then(
+          getRandomPicturesWithOrder(queryParam)
+        );
+      }
+      catch (err) {
+        console.log(err);
+      }
+
+      console.log(y);
+      console.log("//////////");
+      console.log(x);
+      console.log("//////////");
+			res.json(x);
 		}
 		else {
-			console.log(req.query);
+			console.log("ELSE");
 			res.json(getRandomPicturesWithOrder(req.query.randomIdOrder, req.query.numberOfPictures));
 		}
 	}
@@ -63,14 +88,15 @@ module.exports = function(db) {
 	// Get 'req.query.numberOfPictures' random picturesDb from DB.
 	function getRandomPicturesWithOrder(order, n) {
 		// var picturesDb = db.get('Picture');
-
 		console.log('at getRandomPicturesWithOrder');
-		console.log(order);
+		console.log(n);
+    console.log(order);
 		var ret = [];
 		// pick smaller: n, order.length
 		// (run out of pics before enough)
 		var index = 0;
 		var pickLimit = Math.min(n, order.length);
+    console.log("INES");
 
 		async.whilst(function() {
 			return index < pickLimit;
@@ -90,11 +116,14 @@ module.exports = function(db) {
 				next();
 			}
 			catch (err) {
+        console.log("INES_CATCH");
 				console.log(err);
 			}
 
 		},
 		function(err) {
+      console.log(ret);
+      console.log("¨¨¨¨¨¨");
 			return ret;
 		});
 	}
