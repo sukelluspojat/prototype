@@ -14,7 +14,7 @@ function shuffle(o){ //v1.0
 module.exports = function(db) {
 	var exports = {};
 	
-	
+	var pictures = db.get('Picture');
 	//--------------------------------------------
 	// Results in something like:
 	// res.randomIdOrder: Array[object]
@@ -29,7 +29,7 @@ module.exports = function(db) {
 		  // 54655bf859ae3eafbced8a52 ]
 	// Get all picture '_id':s from DB and shuffle them. Order to res.
 	exports.initRandomPictures = function(req, res) {
-		var pictures = db.get('Picture');
+		// var pictures = db.get('Picture');
 		
 		console.log('at initRandomPictures');
 		pictures.find({},{fields:{_id:1}}, function(e,docs) {
@@ -42,7 +42,7 @@ module.exports = function(db) {
 	//--------------------------------------------
 	// Get 'req.query.numberOfPictures' random pictures from DB.
 	exports.getRandomPictures = function(req, res) {	
-		var pictures = db.get('Picture');
+		// var pictures = db.get('Picture');
 		
 		console.log('at getRandomPictures');
 		n = req.query.numberOfPictures;
@@ -81,7 +81,7 @@ module.exports = function(db) {
 	// Get 'req.query.numberOfPictures' random pictures from DB
 	// so that each picture has at least one tag from array 'allowedTags'.
 	exports.getRandomPicturesWithAllowedTags = function(req, res) {
-		var pictures = db.get('Picture');
+		// var pictures = db.get('Picture');
 		
 		console.log('at getRandomPictures');
 		n = req.query.numberOfPictures;
