@@ -28,20 +28,31 @@ module.exports = function(db) {
 		  // 5465be69a4c80c8d8ece26eb,
 		  // 54655bf859ae3eafbced8a52 ]
 	// Get all picture '_id':s from DB and shuffle them. Order to res.
-	exports.initRandomPictures = function(req, res) {
+	function initRandomPictures(req) {
 		// var pictures = db.get('Picture');
 		
 		console.log('at initRandomPictures');
 		pictures.find({},{fields:{_id:1}}, function(e,docs) {
-			res.send({randomIdOrder: shuffle(_.map(docs, function(entry){ return entry['_id']; })) });
+			res.send({randomIdOrder: shuffle(_.map(docs, function(entry){ return entry['_id']; })), numberOfPictures: req.query.numberOfPictures});
 		});
 	}
 	//--------------------------------------------
 	
 	
+	exports.getRandomPictures = function(req, res) {
+		if (typeof req.query.randomIdOrder !== 'object') {
+			exports.getRandomPicturesWithOrder(initRandomPictures(req), res);
+		}
+		else {
+			exports.getRandomPicturesWithOrder(req, res);
+		}
+	}
+	
+	
+	
 	//--------------------------------------------
 	// Get 'req.query.numberOfPictures' random pictures from DB.
-	exports.getRandomPictures = function(req, res) {	
+	exports.getRandomPicturesWithOrder = function(req, res) {	
 		// var pictures = db.get('Picture');
 		
 		console.log('at getRandomPictures');
