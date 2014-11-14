@@ -7,11 +7,11 @@ var bodyParser = require('body-parser');
 
 var env = require('./env.js');
 var monk = require('monk');
-// var db = monk(env.MONGOLAB_URI);
+var db = monk(env.MONGOLAB_URI);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var pictureset = require('./routes/pictureset');
+var pictureset = require('./routes/pictureset')(db);
 
 var app = express();
 
@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/pictureset', pictureset);
+app.use('/pictureset', pictureset.getRandomPictures);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
