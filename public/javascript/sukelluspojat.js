@@ -342,4 +342,4 @@ var Viewport = React.createClass({
     }
 });
 
-React.renderComponent(<Viewport url={ '/users' } />, document.getElementById("container"));
+React.renderComponent(<Viewport url={ '/pictureset?numberOfPictures=15&randomIdOrder=1' } />, document.getElementById("container"));

@@ -1,6 +1,6 @@
 {
-  "name": "prototype",
-  "version": "0.0.0",
+  "name": "sukelluspojat",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -16,6 +16,20 @@
     "swing": "~1.0.9",
     "monk": "0.9.0",
     "underscore": "~1.7.0",
-    "async": "0.9.0"
-  }
+    "async": "0.9.0",
+    "express-session": "1.9.1"
+  },
+  "description": "prototype =========",
+  "main": "app.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sukelluspojat/prototype.git"
+  },
+  "author": "Sukelluspojat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sukelluspojat/prototype/issues"
+  },
+  "homepage": "https://github.com/sukelluspojat/prototype"
 }
