@@ -123,7 +123,8 @@ var removeFromStack = function(direction) {
 
 var UpdateStack = function() {
   // update stack
-  [].forEach.call(document.querySelectorAll('.stack li'), function (targetElement) {
+  console.log("Stack updated");
+  [].forEach.call(document.querySelectorAll('.stackBinder li'), function (targetElement) {
       stack.createCard(targetElement);
       targetElement.classList.add('in-deck');
   });
@@ -136,7 +137,7 @@ var WatchText = React.createClass({
     return (<span dangerouslySetInnerHTML={{__html: this.props.data}}></span>);
   }
 })
-
+/////////////////////// PICTURE ELEMENTS ///////////////////////
 var PictureInfo = React.createClass({
   render: function() {
     console.log(this.props.data);
@@ -182,7 +183,7 @@ var PictureSet = React.createClass({
   },
   render: function() {
     return (
-      <li onClick={ this.handleClick } onDragStart={ this.handleDragEnd }>
+      <li onClick={ this.handleClick } onDragStart={ this.handleDragEnd } className='pictureListElement'>
         <div className='screen'>
           <Picture url={ this.props.data.url } cName="picture"/>
           <PictureInfo data={ this.props.data } styleObj={ this.state.styleObj } />
@@ -196,6 +197,39 @@ var PictureSet = React.createClass({
     );
   }
 })
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////// VACATION LIST ELEMENTS ///////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var VacationListElement = React.createClass({
+  render: function() {
+    return(
+      <div className={'vacatonListElement'}>
+        <h3>{ this.props.data.infoHeading }</h3>
+        <p>{ this.props.data.infoText }</p>
+      </div>
+    );
+  }
+});
+var VacationList = React.createClass({
+  render: function() {
+    return(
+      <li onClick={ this.handleClick } className='vacationList'>
+        <div className='screen'>
+          <VacationListElement data={ this.props.data } />
+          <div className="yes"></div>
+          <div className="no"></div>
+        </div>
+      </li>
+    );
+  }
+});
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////// SCREENCONTENT COMPONENT ///////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var ScreenContent = React.createClass({
   loadDataFromServer: function(url) {
     $.ajax({
@@ -233,7 +267,7 @@ var ScreenContent = React.createClass({
   },
   getInitialState: function() {
         console.log("init");
-        return { data: null };
+        return { data: {data: ''} };
   },
   componentWillMount: function() {
       this.loadDataFromServer(this.props.url);
@@ -244,8 +278,10 @@ var ScreenContent = React.createClass({
     UpdateStack();
   },
   render: function() {
+    var dataType, data;
     console.log("render");
-    var dataType = this.state.data;
+    dataType = this.state.data;
+    data = dataType.data;
     if (dataType === null) {
       return (
         <div className='screenContainer'>
@@ -253,23 +289,24 @@ var ScreenContent = React.createClass({
       );
     }
     else if (dataType.picture === 1) {
-      var pictureData = dataType.data;
-      var pictures = pictureData.map(function(data) {
+      var pictures = data.map(function(data) {
         return <PictureSet data={ data } key={ data.id } />;
       });
       return (
-        <ul className = "stack">
+        <ul className = "stack stackBinder">
           { pictures }
         </ul>
       );
     }
     else if ( dataType.vacationList === 1) {
       // DO STUFF
+      var vacationElements = data.map(function(data) {
+        return <VacationList data={ data } key={ data.id } />;
+      });
       return (
-        <div className='screenContainer'>
-          <div className='screen'>
-          </div>
-        </div>
+        <ul className = "stackVacation stackBinder">
+          { vacationElements }
+        </ul>
       );
 
     }
