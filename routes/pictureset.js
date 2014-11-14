@@ -17,12 +17,12 @@ module.exports = function(db) {
 	
 	
 	//--------------------------------------------
-	// res.randomIdOrder: Array[String]
+	// res.randomIdOrder: Array[object]
 	// Get all picture '_id':s from DB and shuffle them. Order to res.
 	exports.initRandomPictures = function(req, res) {
 		console.log('at initRandomPictures');
 		pictures.find({},{fields:{_id:1}}, function(e,docs) {
-			res.send({randomIdOrder: shuffle(_.map(docs, function(entry){ return entry['_id'].toHexString(); })) });
+			res.send({randomIdOrder: shuffle(_.map(docs, function(entry){ return entry['_id']; })) });
 		});
 	}
 	//--------------------------------------------
@@ -50,7 +50,7 @@ module.exports = function(db) {
 			// append it somewhere (array?)
 			// remove first _id from order
 			
-			pictures.findOne({_id: ObjectID.createFromHexString(order.pop())},{}, 
+			pictures.findOne({_id: order.pop()},{}, 
 				function(err, document) {
 					ret.push(document);
 					//console.log(document);
