@@ -60,48 +60,43 @@ module.exports = function(db) {
 	//--------------------------------------------
 
 
-	exports.getRandomPictures = function(req, res) {
+	exports.handleGetRequest = function(req, res) {
+    // Handles get request, if need for pictures -> deliver them otherwise do something else
     try {
       randomPictures(req.query)
       .then(function(data) {
         console.log("JSON SEND");
         res.json({
-            picture: 1,
-            vacationList: 0,
-            vacationInfo: 0,
-            data: data
-            });
+          picture: 1,
+          vacationList: 0,
+          vacationInfo: 0,
+          data: data
+          });
       });
     }
     catch (err) {
       console.log(err);
     }
-
 	}
-
   function randomPictures(query) {
     var deferred = q.defer();
     var x, queryParam, y;
     if (typeof query.randomIdOrder !== 'object') {
       queryParam = query.numberOfPictures;
       try {
-           getRandomOrder()
-           .then(function(par) {
-             getRandomPicturesWithOrder(par, queryParam)
-             .then(function(data) {
-                console.log("¨¨¨¨¨¨");
-                console.log(data);
-                 deferred.resolve(data);
-              });
-           });
-
+        getRandomOrder()
+        .then(function(par) {
+          getRandomPicturesWithOrder(par, queryParam)
+          .then(function(data) {
+            deferred.resolve(data);
+          });
+        });
       }
       catch (err) {
         console.log(err);
       }
     }
     else {
-      console.log("ELSE");
       res.json(getRandomPicturesWithOrder(req.query.randomIdOrder, req.query.numberOfPictures));
     }
     return deferred.promise;
@@ -112,53 +107,39 @@ module.exports = function(db) {
     var deferred = q.defer();
 		// var picturesDb = db.get('Picture');
 		console.log('at getRandomPicturesWithOrder');
-    console.log(order);
-    console.log(order);
-    console.log(n);
 		var ret = [];
 		// pick smaller: n, order.length
 		// (run out of pics before enough)
 		var index = 0;
 		var pickLimit = Math.min(n, order.length);
-    console.log("INES");
-
-		async.whilst(
-    function() {
-			return index < pickLimit;
-		},
-		function(next) {
-			// get DB document with first '_id' from array 'order'
-			// append it somewhere (array?)
-			// remove first _id from order
-			try {
-				picturesDb.findOne({_id: order.pop() },{},
-				function(err, document) {
-					ret.push(document);
-					console.log(document);
-          console.log("READY")
-				})
-          .then(
-            function() {
-              index = index + 1;
-              console.log("NEXT")
-              next();
-            }
-          )
-
-
-			}
-			catch (err) {
-        console.log("INES_CATCH");
-				console.log(err);
-			}
-
-		},
-		function(err) {
-      console.log("hiiohoi");
-      console.log(ret);
-      deferred.resolve(ret);
-		});
-
+  	async.whilst(
+      function() {
+  			return index < pickLimit;
+  		},
+  		function(next) {
+  			// get DB document with first '_id' from array 'order'
+  			// append it somewhere (array?)
+  			// remove first _id from order
+  			try {
+  				picturesDb.findOne({_id: order.pop() },{},
+  				function(err, document) {
+  					ret.push(document);
+  				})
+            .then(
+              function() {
+                index = index + 1;
+                next();
+              }
+            )
+  			}
+  			catch (err) {
+  				console.log(err);
+  			}
+  		},
+  		function(err) {
+        deferred.resolve(ret);
+  		}
+    );
     return deferred.promise;
 
 	}
