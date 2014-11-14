@@ -30,27 +30,30 @@ module.exports = function(db) {
 		  // 54655bf859ae3eafbced8a52 ]
 	// Get all picture '_id':s from DB and shuffle them. Order to res.
 	function getRandomOrder() {
+    var deferred = q.defer();
     var order;
-		// var picturesDb = db.get('Picture');
 		console.log('at getRandomOrder()');
 		try {
-			return picturesDb.find({},{fields:{_id:1}},
-        function(e,docs) {
-				      randomOrder = shuffle(
-                _.map(docs,
-                  function(entry){
-                    return entry['_id'];
-                  }
-                )
-              );
-          return order;
-        }
-      );
-
+      // deferred.resolve(
+  			picturesDb.find({},{fields:{_id:1}},
+          function(e,docs) {
+  				      randomOrder = shuffle(
+                  _.map(docs,
+                    function(entry){
+                      return entry['_id'];
+                    }
+                  )
+                );
+            deferred.resolve(randomOrder);
+          }
+        );
+      // );
 		}
 		catch (err) {
 		  console.log(err);
+      deferred.reject("error");
 		}
+    return deferred.promise;
 
 
 	}
@@ -58,39 +61,60 @@ module.exports = function(db) {
 
 
 	exports.getRandomPictures = function(req, res) {
+    try {
+      randomPictures(req.query)
+      .then(function(data) {
+        console.log("JSON SEND");
+        res.json({
+            picture: 1,
+            vacationList: 0,
+            vacationInfo: 0,
+            data: data
+            });
+      });
+    }
+    catch (err) {
+      console.log(err);
+    }
+
+	}
+
+  function randomPictures(query) {
+    var deferred = q.defer();
     var x, queryParam, y;
-		if (typeof req.query.randomIdOrder !== 'object') {
-      queryParam = req.query.numberOfPictures;
+    if (typeof query.randomIdOrder !== 'object') {
+      queryParam = query.numberOfPictures;
       try {
-        y = getRandomOrder().then(
-          getRandomPicturesWithOrder(queryParam)
-        );
+           getRandomOrder()
+           .then(function(par) {
+             getRandomPicturesWithOrder(par, queryParam)
+             .then(function(data) {
+                console.log("¨¨¨¨¨¨");
+                console.log(data);
+                 deferred.resolve(data);
+              });
+           });
+
       }
       catch (err) {
         console.log(err);
       }
-
-      console.log(y);
-      console.log("//////////");
-      console.log(x);
-      console.log("//////////");
-			res.json(x);
-		}
-		else {
-			console.log("ELSE");
-			res.json(getRandomPicturesWithOrder(req.query.randomIdOrder, req.query.numberOfPictures));
-		}
-	}
-
-
-
+    }
+    else {
+      console.log("ELSE");
+      res.json(getRandomPicturesWithOrder(req.query.randomIdOrder, req.query.numberOfPictures));
+    }
+    return deferred.promise;
+  }
 	//--------------------------------------------
 	// Get 'req.query.numberOfPictures' random picturesDb from DB.
 	function getRandomPicturesWithOrder(order, n) {
+    var deferred = q.defer();
 		// var picturesDb = db.get('Picture');
 		console.log('at getRandomPicturesWithOrder');
-		console.log(n);
     console.log(order);
+    console.log(order);
+    console.log(n);
 		var ret = [];
 		// pick smaller: n, order.length
 		// (run out of pics before enough)
@@ -98,7 +122,8 @@ module.exports = function(db) {
 		var pickLimit = Math.min(n, order.length);
     console.log("INES");
 
-		async.whilst(function() {
+		async.whilst(
+    function() {
 			return index < pickLimit;
 		},
 		function(next) {
@@ -106,14 +131,21 @@ module.exports = function(db) {
 			// append it somewhere (array?)
 			// remove first _id from order
 			try {
-				picturesDb.findOne({_id: order.pop()},{},
+				picturesDb.findOne({_id: order.pop() },{},
 				function(err, document) {
 					ret.push(document);
-					//console.log(document);
-				});
+					console.log(document);
+          console.log("READY")
+				})
+          .then(
+            function() {
+              index = index + 1;
+              console.log("NEXT")
+              next();
+            }
+          )
 
-				index = index + 1;
-				next();
+
 			}
 			catch (err) {
         console.log("INES_CATCH");
@@ -122,10 +154,13 @@ module.exports = function(db) {
 
 		},
 		function(err) {
+      console.log("hiiohoi");
       console.log(ret);
-      console.log("¨¨¨¨¨¨");
-			return ret;
+      deferred.resolve(ret);
 		});
+
+    return deferred.promise;
+
 	}
 	//--------------------------------------------
 
