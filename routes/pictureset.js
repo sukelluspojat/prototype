@@ -2,6 +2,7 @@ var _ = require('underscore');
 var async = require('async');
 var q = require('q');
 
+
 //------------------------------------------
 //+ Jonas Raoni Soares Silva
 //@ http://jsfromhell.com/array/shuffle [v1.0]
@@ -13,13 +14,15 @@ function shuffle(o){ //v1.0
 
 
 module.exports = function(db) {
-	var exports = {};
+	var exports = {}; //some js specific trick
 
-	var picturesDb = db.get('Picture');
+	var picturesDb = db.get('Picture'); //DB collection for pictures
+  
+  
 	//--------------------------------------------
 	// Results in something like:
-	// res.randomIdOrder: Array[object]
-	// =   [ 54655bf459ae3eafbced8a50,
+	// Array[object]
+	// = [ 54655bf459ae3eafbced8a50,
 		  // 5465be67a4c80c8d8ece26e8,
 		  // 54655ca4c5b739c41127fe5a,
 		  // 5465be67a4c80c8d8ece26ea,
@@ -28,11 +31,14 @@ module.exports = function(db) {
 		  // 5465be67a4c80c8d8ece26e9,
 		  // 5465be69a4c80c8d8ece26eb,
 		  // 54655bf859ae3eafbced8a52 ]
-	// Get all picture '_id':s from DB and shuffle them. Order to res.
+	// Get all picture '_id':s from DB and shuffle them. Order returned.
+	// GOAL: Order is used to save user-specific random order and to save
+	// which pictures have not been asked.
 	function getRandomOrder() {
     var deferred = q.defer();
     var order;
 		console.log('at getRandomOrder()');
+    
 		try {
       // deferred.resolve(
   			picturesDb.find({},{fields:{_id:1}},
@@ -53,24 +59,32 @@ module.exports = function(db) {
 		  console.log(err);
       deferred.reject("error");
 		}
+    
     return deferred.promise;
-
-
 	}
 	//--------------------------------------------
 
 
-	exports.handleGetRequest = function(req, res) {
+  
+  //--------------------------------------------
+  // Used by other files. Returns picture data with .json.
+  // req.query.numberOfPictures = number of wanted pictures
+  //
+  // req.query.randomIdOrder = (optional -> else put something non-object) array of shuffled DB '_id':s for pictures
+  // GOAL: (saves user-specific random order and saves which pictures have not been asked)
+	//
+  // Other parameters?
+  exports.handleGetRequest = function(req, res) {
     // Handles get request, if need for pictures -> deliver them otherwise do something else
     try {
       randomPictures(req.query)
       .then(function(data) {
         console.log("JSON SEND");
         res.json({
-          picture: 1,
-          vacationList: 0,
-          vacationInfo: 0,
-          data: data
+          picture: 1, //means what??
+          vacationList: 0, //means what??
+          vacationInfo: 0, //means what??
+          data: data //HERE: DB entries for req.query.numberOfPictures different pictures
           });
       });
     }
@@ -78,15 +92,21 @@ module.exports = function(db) {
       console.log(err);
     }
 	}
+  //--------------------------------------------
+  
+  
+  
+  //--------------------------------------------
+  // Collects requested random pictures 
   function randomPictures(query) {
     var deferred = q.defer();
-    var x, queryParam, y;
+    var queryNumberOfPictures;
     if (typeof query.randomIdOrder !== 'object') {
-      queryParam = query.numberOfPictures;
+      queryNumberOfPictures = query.numberOfPictures;
       try {
         getRandomOrder()
         .then(function(par) {
-          getRandomPicturesWithOrder(par, queryParam)
+          getRandomPicturesWithOrder(par, queryNumberOfPictures)
           .then(function(data) {
             deferred.resolve(data);
           });
@@ -101,25 +121,35 @@ module.exports = function(db) {
     }
     return deferred.promise;
   }
+  //--------------------------------------------
+  
+  
+  
 	//--------------------------------------------
-	// Get 'req.query.numberOfPictures' random picturesDb from DB.
+	// Get 'n' random picturesDb from DB. 
+  // Random selection with parameter 'order' that is
+  // a shuffled list of DB '_id':s for all available
+  // pictures that have not been asked.
 	function getRandomPicturesWithOrder(order, n) {
     var deferred = q.defer();
-		// var picturesDb = db.get('Picture');
+    
 		console.log('at getRandomPicturesWithOrder');
 		var ret = [];
-		// pick smaller: n, order.length
-		// (run out of pics before enough)
-		var index = 0;
+		
+    var index = 0;
+		
+    // pick smaller: n, order.length
+		// (run out of pictures before found enough)
 		var pickLimit = Math.min(n, order.length);
-  	async.whilst(
+  	
+    async.whilst(
       function() {
   			return index < pickLimit;
   		},
   		function(next) {
-  			// get DB document with first '_id' from array 'order'
-  			// append it somewhere (array?)
-  			// remove first _id from order
+  			// Get DB document with first '_id' from array 'order'.
+  			// Append it to array 'ret'.
+  			// Remove first _id from order. (.pop() used)
   			try {
   				picturesDb.findOne({_id: order.pop() },{},
   				function(err, document) {
@@ -140,15 +170,18 @@ module.exports = function(db) {
         deferred.resolve(ret);
   		}
     );
+    
     return deferred.promise;
-
 	}
 	//--------------------------------------------
+  
+  
 
-
+  //@TODO: MAKE THIS WORK WITH REST OF THE PROGRAM:
+  // MISSING: DATA TRANSFER, ASYNC PROBLEMS
 	//--------------------------------------------
 	// Get 'req.query.numberOfPictures' random picturesDb from DB
-	// so that each picture has at least one tag from array 'allowedTags'.
+	// so that each picture has at least one tag from array 'req.query.allowedTags'.
 	exports.getRandomPicturesWithAllowedTags = function(req, res) {
 		// var picturesDb = db.get('Picture');
 
@@ -204,6 +237,3 @@ module.exports = function(db) {
 	return exports;
 };
 
-
-
-//http://expressjs.com/api.html#req.param
