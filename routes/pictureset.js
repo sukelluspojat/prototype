@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var async = require('async');
 var q = require('q');
-
+var C_Map = require("collections/map"); //js has standard map support 'Map()' on some platforms, this is different.
 
 //------------------------------------------
 //+ Jonas Raoni Soares Silva
@@ -17,8 +17,10 @@ module.exports = function(db) {
 	var exports = {}; //some js specific trick
 
 	var picturesDb = db.get('Picture'); //DB collection for pictures
+  var holidaysDb = db.get('Holiday'); //DB collection for holiday packages
   
-  
+  var order = [];
+  var scoresMap;
 	//--------------------------------------------
 	// Results in something like:
 	// Array[object]
@@ -36,7 +38,6 @@ module.exports = function(db) {
 	// which pictures have not been asked.
 	function getRandomOrder() {
     var deferred = q.defer();
-    var order;
 		console.log('at getRandomOrder()');
     
 		try {
@@ -50,6 +51,8 @@ module.exports = function(db) {
                     }
                   )
                 );
+            order = randomOrder;
+            console.log(order);
             deferred.resolve(randomOrder);
           }
         );
@@ -59,6 +62,13 @@ module.exports = function(db) {
 		  console.log(err);
       deferred.reject("error");
 		}
+    
+    //run other tests on currently unused parts of the program:
+    getInitializedHolidays().then(function(re) {
+      console.log("-----------TEST: getInitializedHolidays----------");
+      console.log(re);
+    });
+    // ^^ comment out until here ^^
     
     return deferred.promise;
 	}
@@ -101,12 +111,13 @@ module.exports = function(db) {
   function randomPictures(query) {
     var deferred = q.defer();
     var queryNumberOfPictures;
+    
     if (typeof query.randomIdOrder !== 'object') {
       queryNumberOfPictures = query.numberOfPictures;
       try {
         getRandomOrder()
-        .then(function(par) {
-          getRandomPicturesWithOrder(par, queryNumberOfPictures)
+        .then(function(order) {
+          getRandomPicturesWithOrder(order, queryNumberOfPictures)
           .then(function(data) {
             deferred.resolve(data);
           });
@@ -176,7 +187,102 @@ module.exports = function(db) {
 	//--------------------------------------------
   
   
+  
+  //--------------------------------------------
+	// Results in something like:
+	// Array[object]
+	// = [ [54655bf459ae3eafbced8a50, 25],
+		  // [5465be67a4c80c8d8ece26e8, 15],
+		  // [54655ca4c5b739c41127fe5a, 12]]
+	// Get query.n best holiday packages according to answers
+  // query.accepted. (and query.rejected)? Returns an array of
+  // ['_id', points] pairs that is used to save holiday 
+  // packages that are still in contention and their scores.
+	function bestAlternatives(query) {
+    var deferred = q.defer();
+    var queryN = query.n;
+    var queryAccepted = query.accepted;
+    var queryRejected = query.rejected;
 
+    try {
+      getInitializedHolidays()
+      .then(function(holidayMap) {
+        getBestScoredAlternatives(holidayMap, queryN, queryAccepted, queryRejected)
+        .then(function(data) {
+          deferred.resolve(data);
+        });
+      });
+    }
+    catch (err) {
+      console.log(err);
+    }
+    return deferred.promise;
+	}
+	//--------------------------------------------
+
+  
+  //--------------------------------------------
+  // Initializes and returns a Map of groups of 
+  // holiday _id:s, tagsMultipliers and point amounts. 
+  function getInitializedHolidays() {
+    
+    var deferred = q.defer();
+    console.log('at getInitializedHolidays()');
+    
+    try {
+      // deferred.resolve(
+  			holidaysDb.find({},{fields:{_id: 1, tagsMultipliers: 1}},
+          function(e,docs) {
+            idScorePairs = 
+              _.map(docs,
+                function(entry){
+                  return [entry['_id'], entry['tagsMultipliers'], 0];
+                }
+              );
+            //console.log(idScorePairs);
+            deferred.resolve(idScorePairs);
+          }
+        );
+      // );
+		}
+		catch (err) {
+		  console.log(err);
+      deferred.reject("error");
+		}
+    
+    return deferred.promise;
+    
+  }
+  //--------------------------------------------
+  
+  
+  //--------------------------------------------
+  // Returns an array of n [_id, tagsMultipliers, score] groups that have highest scores.
+  // function getBestScoredAlternatives(holidayScores, n, accepted, rejected) {
+  
+    // var deferred = q.defer();
+    // console.log('at getBestScoredAlternatives');
+    
+    // try {
+      // _.foreach(holidayScores, 
+        // function(entry){
+          // _.foreach(entry[1], function(tagMultipPair) {
+            // accCount = 
+          // })
+          
+        // })
+      // });
+    // }
+    // catch(err) {
+		  // console.log(err);
+      // deferred.reject("error");
+		// }
+    
+    // return deferred.promise;
+  // }
+  //--------------------------------------------
+  
+  
   //@TODO: MAKE THIS WORK WITH REST OF THE PROGRAM:
   // MISSING: DATA TRANSFER, ASYNC PROBLEMS
 	//--------------------------------------------
@@ -237,3 +343,4 @@ module.exports = function(db) {
 	return exports;
 };
 
+// http://stackoverflow.com/questions/12629692/querying-an-array-of-arrays-in-mongodb
