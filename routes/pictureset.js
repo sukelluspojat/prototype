@@ -20,10 +20,12 @@ module.exports = function(db) {
   var holidaysDb = db.get('Holiday'); //DB collection for holiday packages
   
   
-  var negMultip = 0.5; // used to make rejections to have less effect to scores
+  var negMultip = 0.5; // used to make rejections to have less effect on scores
   
   var order = [];
   var scoresMap;
+  
+  
 	//--------------------------------------------
 	// Results in something like:
 	// Array[object]
@@ -44,7 +46,6 @@ module.exports = function(db) {
 		console.log('at getRandomOrder()');
     
 		try {
-      // deferred.resolve(
   			picturesDb.find({},{fields:{_id:1}},
           function(e,docs) {
   				      randomOrder = shuffle(
@@ -55,11 +56,9 @@ module.exports = function(db) {
                   )
                 );
             order = randomOrder;
-            console.log(order);
             deferred.resolve(randomOrder);
           }
         );
-      // );
 		}
 		catch (err) {
 		  console.log(err);
@@ -69,7 +68,7 @@ module.exports = function(db) {
     //run other tests on currently unused parts of the program:
     // getInitializedHolidays().then(function(re) {
       // console.log("-----------TEST: getInitializedHolidays----------");
-      // console.log(re);
+      // //console.log(re);
       // getBestScoredAlternatives(re, 5, ['beach', 'bar', 'reef'], ['kids', 'tropical', 'friends']);
     // });
     // ^^ comment out until here ^^
@@ -235,15 +234,15 @@ module.exports = function(db) {
     
     try {
       // deferred.resolve(
-  			holidaysDb.find({},{fields:{_id: 1, tagsMultipliers: 1}},
+  			holidaysDb.find({},{fields:{_id: 1, tags: 1, multipliers: 1}},
           function(e,docs) {
             idScorePairs = 
               _.map(docs,
                 function(entry){
-                  return [entry['_id'], _.map(entry['tagsMultipliers'], function(t) {return _.map(t, function(p) {return _.values(p);})}), 0];
+                  return [entry['_id'], _.zip(entry['tags'], entry['multipliers']), 0];
                 }
               );
-            //console.log(idScorePairs);
+            _.forEach(idScorePairs, function(asd) {console.log(asd);});
             deferred.resolve(idScorePairs);
           }
         );
@@ -261,23 +260,18 @@ module.exports = function(db) {
   
   
   //--------------------------------------------
-  // Returns an array of n [_id, tagsMultipliers, score] groups that have highest scores.
+  // Returns an array of n [_id, [[tag, multiplier] pairs], score] groups that have highest scores.
   function getBestScoredAlternatives(holidayScores, n, accepted, rejected) {
   
     var deferred = q.defer();
     console.log('at getBestScoredAlternatives');
-    console.log('---Accepted:---');
-    console.log(accepted);
-    console.log('---Rejected:---');
-    console.log(rejected);
     
     try {
       //for each holiday, for each tag in holiday: 
       // calculate points for current tag
-      _.foreach(holidayScores, 
+      _.forEach(holidayScores, 
         function(entry){
-          // here entry = [id, tags, points]
-          _.foreach(entry[1], function(tagMultipPair) {
+          _.forEach(entry[1], function(tagMultipPair) {
             // each [tag, multiplier] pair
             // count tag from accepted
             accCount = _.filter(accepted, function(tag){ return tag == tagMultipPair[0]; }).length;
@@ -286,17 +280,16 @@ module.exports = function(db) {
             // count tag from rejected
             rejCount = _.filter(rejected, function(tag){ return tag == tagMultipPair[0]; }).length;
             // decrease points
-            entry[2] = entry[2] + rejCount * tagMultipPair[1] * negMultip;
+            entry[2] = entry[2] - rejCount * tagMultipPair[1] * negMultip;
             
-            console.log('---Score Calc Data---');
-            console.log('tag: ' + tagMultipPair[1] + ' acc: ' + accCount + ' rej: ' + rejCount);
-          })
-          
+          });
         }
       );
       
-      temp = holidayScores[0];
-      //get n best, (maxby + pop) x n?
+      holidayScores.sort(function(a, b){return b[2]-a[2]});
+      
+      temp = holidayScores.slice(0, Math.min(n, holidayScores.length));
+
       deferred.resolve(temp);
     }
     catch(err) {
@@ -309,64 +302,16 @@ module.exports = function(db) {
   //--------------------------------------------
   
   
-  // //@TODO: MAKE THIS WORK WITH REST OF THE PROGRAM:
-  // // MISSING: DATA TRANSFER, ASYNC PROBLEMS
-	// //--------------------------------------------
-	// // Get 'req.query.numberOfPictures' random picturesDb from DB
-	// // so that each picture has at least one tag from array 'req.query.allowedTags'.
-	// exports.getRandomPicturesWithAllowedTags = function(req, res) {
-		// // var picturesDb = db.get('Picture');
-
-		// console.log('at getRandomPicturesWithAllowedTags');
-		// n = req.query.numberOfPictures;
-		// order = req.query.randomIdOrder;
-		// tags = req.query.allowedTags;
-
-		// // DO STUFF
-		// // like getRandomPictures, but if first _id from order has no tag from tags just remove it and continue with next.
-		// // other note: cannot pick smaller of order.length and n to while loop end limit
-		// // according to current algorithm, we never return back to picturesDb that have once been skipped. -> Just discard from 'order' array.
-
-		// var ret = [];
-		// // pick smaller: n, order.length
-		// // (run out of pics before enough)
-		// var indexCount = 0;
-		// var foundCount = 0;
-
-		// async.whilst(function() {
-			// return indexCount < order.length && foundCount < n;
-		// },
-		// function(next) {
-			// // get DB document with first '_id' from array 'order'
-			// // append it somewhere (array?)
-			// // remove first _id from order
-      // try {
-        // picturesDb.findOne({_id: order.pop()},{},
-          // function(err, document) {
-            // if(_.intersection(tags, document.tags).length > 0) {
-              // //if tag lists have non-empty intersection, then:
-              // ret.push(document);
-              // foundCount = foundCount + 1;
-            // }
-            // //console.log(document);
-          // });
-
-        // indexCount = indexCount + 1;
-        // next();
-      // }
-      // catch (err) {
-        // console.log(err);
-      // }
-
-		// },
-		// function(err) {
-			// res.send({documentArrayJson: ret, randomIdOrder: order});
-		// });
-	// }
-	// //--------------------------------------------
+  function getHolidaysForIds(ids) {
+    var deferred = q.defer();
+    
+    console.log('at getHolidaysForIds');
+    
+    deferred.resolve(_.map(ids, function(id) {holidaysDb.findOne({_id: id}, {});}));
+    
+    return deferred.promise;
+	}
 
 
 	return exports;
 };
-
-// http://stackoverflow.com/questions/12629692/querying-an-array-of-arrays-in-mongodb
