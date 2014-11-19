@@ -17,13 +17,13 @@ module.exports = function(db) {
 
 	var picturesDb = db.get('Picture'); //DB collection for pictures
   var holidaysDb = db.get('Holiday'); //DB collection for holiday packages
-  
-  
+
+
   var negMultip = 0.5; // used to make rejections to have less effect on scores
-  
+
   var order = [];
   var scores = [];
-  
+
   //--------------------------------------------
   // Used by other files. Returns picture data with .json.
   // req.query.numberOfPictures = number of wanted pictures
@@ -37,7 +37,6 @@ module.exports = function(db) {
         console.log("JSON SEND");
         res.json({
           picture: 1, //means what??
-          vacationList: 0, //means what??
           vacationInfo: 0, //means what??
           data: data[0] //HERE: DB entries for req.query.numberOfPictures different pictures
           });
@@ -47,14 +46,14 @@ module.exports = function(db) {
       console.log(err);
     }
 	}
-  
-  
+
+
   //--------------------------------------------
-  // Used by other files. 
+  // Used by other files.
   //
   exports.handleGetRequestNew = function(req, res) {
     if(req.query.type == "InitialPictures") {
-      //--- needs: 
+      //--- needs:
       //-req.query.numberOfPictures: Wanted amount of returned DB entries.
       //--- should return:
       //-data: DB entries for 'numberOfPictures' random pictures
@@ -65,6 +64,8 @@ module.exports = function(db) {
         .then(function(returned) {
           console.log("JSON SEND 'InitialPictures'");
           res.json({
+            picture: 1,
+            vacationInfo: 0,
             data: returned[0],
             randomIdOrder: returned[1]
           });
@@ -75,17 +76,17 @@ module.exports = function(db) {
       }
     }
     else if(req.query.type == "MorePictures") {
-      //--- needs: 
+      //--- needs:
       //-req.query.numberOfPictures: Wanted amount of returned DB entries.
       //-req.query.randomIdOrder: Tells which pictures are still unasked and
       //gives user-specific randomized order of pictures.
       //-req.query.accepted: 1D array of accepted tags for previous picture set only
       //-req.query.rejected: 1D array of rejected tags for previous picture set only
-      //-req.query.numberInContention: Number of holiday packages kept in contention 
+      //-req.query.numberInContention: Number of holiday packages kept in contention
       //for this set of pictures.
       //--- should return:
       //-data: DB entries for 'numberOfPictures' random pictures
-      //-scores: Points after previous pictures for 'numberInContention' best 
+      //-scores: Points after previous pictures for 'numberInContention' best
       //holiday packages.
       //-tags: List of most effective tags for holiday packages still in contention. Try to pick one of these when asking user.
       try {
@@ -93,6 +94,8 @@ module.exports = function(db) {
         .then(function(returned) {
           console.log("JSON SEND 'MorePictures'");
           res.json({
+            picture: 1,
+            vacationInfo: 0,
             data: returned[0],
             scores: returned[1],
             tags: returned[2]
@@ -116,6 +119,8 @@ module.exports = function(db) {
         .then(function(returned) {
           console.log("JSON SEND 'BestHolidays'");
           res.json({
+            picture: 0,
+            vacationInfo: 1,
             data: returned[0]
           });
         });
@@ -128,8 +133,8 @@ module.exports = function(db) {
       console.log("ERR: Unknown request type.");
     }
 	}
-  
-  
+
+
 	//--------------------------------------------
 	// Results in something like:
 	// Array[object]
@@ -142,7 +147,7 @@ module.exports = function(db) {
 	function getRandomOrder() {
     var deferred = q.defer();
 		console.log('at getRandomOrder()');
-    
+
 		try {
       picturesDb.find({},{fields:{_id:1}}, function(e,docs) {
           randomOrder = shuffle(
@@ -161,16 +166,16 @@ module.exports = function(db) {
 		  console.log(err);
       deferred.reject("error");
 		}
-    
+
     return deferred.promise;
 	}
 
-  
+
   //--------------------------------------------
-  // Collects requested random pictures 
+  // Collects requested random pictures
   function initialRandomPictures(query) {
     var deferred = q.defer();
-    
+
     try {
       getRandomOrder()
       .then(function(order) {
@@ -186,18 +191,18 @@ module.exports = function(db) {
 
     return deferred.promise;
   }
-  
-  
+
+
   //--------------------------------------------
   // Collects requested another set of random pictures
-  // and counts scores for answers of the previous picture set  
+  // and counts scores for answers of the previous picture set
   function moreRandomPictures(query) {
     var deferred = q.defer();
-    
+
     try {
       getInitializedHolidays()
       .then(function(scores) { //init scores
-        getBestScoredAlternatives(scores, query.numberReturned, query.accepted, 
+        getBestScoredAlternatives(scores, query.numberReturned, query.accepted,
           query.rejected) //n best scores
         .then(function(bestScores) {
           getTagList(bestScores)
@@ -213,28 +218,28 @@ module.exports = function(db) {
     catch (err) {
       console.log(err);
     }
-    
+
     return deferred.promise;
   }
-  
-  
+
+
 	//--------------------------------------------
-	// Get 'n' random picturesDb from DB. 
+	// Get 'n' random picturesDb from DB.
   // Random selection with parameter 'order' that is
   // a shuffled list of DB '_id':s for all available
   // pictures that have not been asked.
 	function getRandomPicturesWithOrder(order, n) {
     var deferred = q.defer();
-    
+
 		console.log('at getRandomPicturesWithOrder');
 		var ret = [];
-		
+
     var index = 0;
-		
+
     // pick smaller: n, order.length
 		// (run out of pictures before found enough)
 		var pickLimit = Math.min(n, order.length);
-  	
+
     async.whilst(
       function() {
   			return index < pickLimit;
@@ -263,27 +268,27 @@ module.exports = function(db) {
         deferred.resolve(ret);
   		}
     );
-    
+
     return deferred.promise;
 	}
-	
-  
+
+
   //--------------------------------------------
-	// Get 'n' random picturesDb from DB. 
+	// Get 'n' random picturesDb from DB.
   // Random selection with parameter 'order' that is
   // a shuffled list of DB '_id':s for all available
   // pictures that have not been asked.
 	function getRandomPicturesWithOrderAndTagList(order, tagList, n) {
     var deferred = q.defer();
-    
+
 		console.log('at getRandomPicturesWithOrderAndTagList');
 		var ret = [];
-		
+
     var index = 0;
 		var found = 0;
     // pick smaller: n, order.length
 		// (run out of pictures before found enough)
-  	
+
     async.whilst(
       function() {
   			return index < order.length && found < n;
@@ -315,24 +320,24 @@ module.exports = function(db) {
         deferred.resolve(ret);
   		}
     );
-    
+
     return deferred.promise;
 	}
 
-  
+
   //--------------------------------------------
-  // Initializes and returns a Map of groups of 
-  // holiday _id:s, tagsMultipliers and point amounts. 
+  // Initializes and returns a Map of groups of
+  // holiday _id:s, tagsMultipliers and point amounts.
   function getInitializedHolidays() {
-    
+
     var deferred = q.defer();
     console.log('at getInitializedHolidays()');
-    
+
     try {
       // deferred.resolve(
   			holidaysDb.find({},{fields:{_id: 1, tags: 1, multipliers: 1}},
           function(e,docs) {
-            scores = 
+            scores =
               _.map(docs,
                 function(entry){
                   return [entry['_id'], _.zip(entry['tags'], entry['multipliers']), 0];
@@ -348,29 +353,29 @@ module.exports = function(db) {
 		  console.log(err);
       deferred.reject("error");
 		}
-    
+
     return deferred.promise;
   }
-  
-  
+
+
   //--------------------------------------------
-  // Returns an array of n [_id, [[tag, multiplier] pairs], score] groups that 
+  // Returns an array of n [_id, [[tag, multiplier] pairs], score] groups that
   // have highest scores.
   function getBestScoredAlternatives(holidayScores, n, accepted, rejected) {
-  
+
     var deferred = q.defer();
     console.log('at getBestScoredAlternatives');
-    
+
     try {
-      //for each holiday, for each tag in holiday: 
+      //for each holiday, for each tag in holiday:
       // calculate points for current tag
-      _.forEach(holidayScores, 
+      _.forEach(holidayScores,
         function(entry){
           _.forEach(entry[1], function(tagMultipPair) {
             // each [tag, multiplier] pair
             // count tag from accepted
             accCount = _.filter(accepted, function(tag){
-              return tag == tagMultipPair[0]; 
+              return tag == tagMultipPair[0];
             }).length;
             // increase points
             entry[2] = entry[2] + accCount * tagMultipPair[1];
@@ -380,13 +385,13 @@ module.exports = function(db) {
             }).length;
             // decrease points
             entry[2] = entry[2] - rejCount * tagMultipPair[1] * negMultip;
-            
+
           });
         }
       );
-      
+
       holidayScores.sort(function(a, b){return b[2]-a[2]});
-      
+
       temp = holidayScores.slice(0, Math.min(n, holidayScores.length));
 
       deferred.resolve(temp);
@@ -395,19 +400,19 @@ module.exports = function(db) {
 		  console.log(err);
       deferred.reject("error");
 		}
-    
+
     return deferred.promise;
   }
 
-  
-  
+
+
   function bestHolidays(query) {
     var deferred = q.defer();
-    
+
     try {
-      getBestScoredAlternatives(scores, query.numberReturned, query.accepted, 
+      getBestScoredAlternatives(scores, query.numberReturned, query.accepted,
         query.rejected) //n best scores
-      .then(function(bestScores) { 
+      .then(function(bestScores) {
         //bestScores = [_id, [[tag, multiplier] pairs], score]
         getHolidaysForIds(_.map(bestScores, function(tuple) {
           return tuple[0];
@@ -424,34 +429,34 @@ module.exports = function(db) {
     return deferred.promise;
   }
 
-  
+
   function getHolidaysForIds(ids) {
     var deferred = q.defer();
-    
+
     console.log('at getHolidaysForIds');
-    
+
     deferred.resolve(_.map(ids, function(id) {holidaysDb.findOne({_id: id}, {});}));
-    
+
     return deferred.promise;
 	}
 
-  
+
   //List of most efficient tags for holiday packages still in contention
-  function getTagList(bestScores) { 
+  function getTagList(bestScores) {
     //[_id, [[tag, multiplier] pairs], score]
     var tagsForHoliday = _.map(bestScores, function(tuple) {
       return _.map(tuple[1], function(tagMultipPair) {
         return tagMultipPair[0];
       });
     });
-    
-    return _.difference(_.union(tagsForHoliday), _.intersection(tagsForHoliday));  
+
+    return _.difference(_.union(tagsForHoliday), _.intersection(tagsForHoliday));
   }
-  
+
   function tests() {
     var local_order;
     var local_scores;
-    
+
     try {
       initialRandomPictures({numberOfPictures: 10})
       .then(function(returned) {
@@ -494,8 +499,8 @@ module.exports = function(db) {
       console.log(err);
     }
 	}
-  
-  
-  
+
+
+
 	return exports;
 };

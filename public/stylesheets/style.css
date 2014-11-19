@@ -8,6 +8,9 @@ body {
 a {
   color: #00B7FF;
 }
+.off-deck {
+  display: none;
+}
 
 #viewport {
   width: 379px;
@@ -132,13 +135,25 @@ a {
   -ms-user-select: none;
   user-select: none;
 }
-.vacatonListElement {
+.vacationElement {
   height: 100%;
   width: 100%;
-  border-radius: 20px;
-  padding: 5px;
+  padding: 8px;
   box-sizing: border-box;
-
+  color: white;
+  overflow: scroll;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background: rgba(0, 0, 0, 0.4);
+}
+.vacationBG {
+  height:100%;
+  width: 100%;
+  background-size: cover;
 }
 .stackVacation {
   box-sizing: border-box;
@@ -153,6 +168,16 @@ a {
 
 
 }
+
+.button:hover {
+   border-top-color: #0362a1;
+   background: #0362a1;
+   color: #ccc;
+   }
+.button:active {
+   border-top-color: #1b435e;
+   background: #1b435e;
+   }
 
 
 .hidden {
@@ -185,4 +210,85 @@ body {
 @font-face {
     font-family: eight-bit;
     src: url("/stylesheets/8bit_wonder/8-BIT_WONDER.ttf");
+}
+@font-face {
+    font-family: FontAwesome;
+    src: url('/stylesheets/fontawesome-webfont.eot?#iefix&v=3.0.1') format('embedded-opentype'),
+         url('/stylesheets/fontawesome-webfont.woff?v=3.0.1') format('woff'),
+         url('/stylesheets/fontawesome-webfont.ttf?v=3.0.1') format('truetype');
+}
+
+#toast-container > .toast {
+    background-image: none !important;
+}
+
+#toast-container > .toast:before {
+    position: fixed;
+    font-family: FontAwesome;
+    font-size: 24px;
+    line-height: 18px;
+    float: left;
+    color: #FFF;
+    padding-right: 0.5em;
+    margin: auto 0.5em auto -1.5em;
+}
+#toast-container > .toast-error:before {
+    content: "\f00d";
+}
+#toast-container > .toast-success:before {
+    content: "\f00c";
+}
+
+.animate
+{
+	transition: all 0.1s;
+	-webkit-transition: all 0.1s;
+}
+
+.action-button
+{
+	position: relative;
+	padding: 10px 40px;
+  margin: 0px 10px 10px 0px;
+  float: left;
+	border-radius: 10px;
+	font-family: 'Pacifico', cursive;
+	font-size: 20px;
+	color: #FFF;
+	text-decoration: none;
+}
+
+.blue
+{
+	background-color: #3498DB;
+	border-bottom: 5px solid #2980B9;
+	text-shadow: 0px -2px #2980B9;
+}
+
+.red
+{
+	background-color: #E74C3C;
+	border-bottom: 5px solid #BD3E31;
+	text-shadow: 0px -2px #BD3E31;
+}
+
+.green
+{
+	background-color: #82BF56;
+	border-bottom: 5px solid #669644;
+	text-shadow: 0px -2px #669644;
+}
+
+.yellow
+{
+	background-color: #F2CF66;
+	border-bottom: 5px solid #D1B358;
+	text-shadow: 0px -2px #D1B358;
+}
+
+.action-button:active
+{
+	transform: translate(0px,5px);
+  -webkit-transform: translate(0px,5px);
+	border-bottom: 1px solid;
 }

@@ -78,13 +78,31 @@ router.get('/', function(req, res) {
     res.json(
       {
         picture: 0,
-        vacationList: 1,
-        vacationInfo: 0,
+        vacationList: 0,
+        vacationInfo: 1,
         data:
           {
             "id" : 1 * dummyCounter,
             "infoHeading": "Some Heading",
             "infoText": "American Apparel aesthetic gentrify, " +
+              "craft beer High Life Pitchfork semiotics stumptown bespoke keytar." +
+              "Tousled try-hard organic, shabby chic cray iPhone Williamsburg keytar cred Intelligentsia keffiyeh" +
+              "occupy cliche Vice. Quinoa literally tattooed, occupy selvage Neutra kitsch lomo cold-pressed beard." +
+              "Schlitz DIY synth, kale chips cornhole letterpress Etsy selfies tousled distillery lo-fi health" +
+              "goth tilde put a bird on it jean shorts. Pop-up American Apparel locavore, lo-fi art party" +
+              "mumblecore messenger bag asymmetrical crucifix distillery Williamsburg mustache semiotics" +
+              "craft beer High Life Pitchfork semiotics stumptown bespoke keytar." +
+              "Tousled try-hard organic, shabby chic cray iPhone Williamsburg keytar cred Intelligentsia keffiyeh" +
+              "occupy cliche Vice. Quinoa literally tattooed, occupy selvage Neutra kitsch lomo cold-pressed beard." +
+              "Schlitz DIY synth, kale chips cornhole letterpress Etsy selfies tousled distillery lo-fi health" +
+              "goth tilde put a bird on it jean shorts. Pop-up American Apparel locavore, lo-fi art party" +
+              "mumblecore messenger bag asymmetrical crucifix distillery Williamsburg mustache semiotics" +
+              "craft beer High Life Pitchfork semiotics stumptown bespoke keytar." +
+              "Tousled try-hard organic, shabby chic cray iPhone Williamsburg keytar cred Intelligentsia keffiyeh" +
+              "occupy cliche Vice. Quinoa literally tattooed, occupy selvage Neutra kitsch lomo cold-pressed beard." +
+              "Schlitz DIY synth, kale chips cornhole letterpress Etsy selfies tousled distillery lo-fi health" +
+              "goth tilde put a bird on it jean shorts. Pop-up American Apparel locavore, lo-fi art party" +
+              "mumblecore messenger bag asymmetrical crucifix distillery Williamsburg mustache semiotics" +
               "craft beer High Life Pitchfork semiotics stumptown bespoke keytar." +
               "Tousled try-hard organic, shabby chic cray iPhone Williamsburg keytar cred Intelligentsia keffiyeh" +
               "occupy cliche Vice. Quinoa literally tattooed, occupy selvage Neutra kitsch lomo cold-pressed beard." +

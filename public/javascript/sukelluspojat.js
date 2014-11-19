@@ -34,18 +34,33 @@ throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind'),
 
 stack.on('throwout', function (e) {
     var lastIndex, parent, direction;
+    toastr.options = {
+      "showDuration": "300",
+      "hideDuration": "300",
+      "timeOut": "1000"
+    }
     // the last react componen on the list
     lastIndex = SukellusSession.stackElement.length - 1;
     handleTag(SukellusSession.stackElement[lastIndex].props.data.tags, e.throwDirection);
-    console.log(lastIndex);
     if (lastIndex === 0) {
       SukellusSession.screenContainer.handleEmptySet();
+    }
+    if (e.throwDirection === 1) {
+      toastr.options.positionClass = "toast-top-right";
+      toastr.success('Yes!');
+    }
+    else {
+      toastr.options.positionClass = "toast-top-left";
+      toastr.error("No!");
     }
     // Use tags
     // check if last element -> let the server decide what to send next
     SukellusSession.stackElement.pop();
     parent = e.target.parentNode;
-    e.target.style.display = 'none';
+    console.log(e.target.style.display);
+    e.target.classList.remove('in-deck');
+    e.target.classList.add('off-deck');
+    toastr.clear();
 });
 
 stack.on('dragmove', function (e) {
@@ -148,7 +163,6 @@ var Picture = React.createClass({
 
 var PictureInfo = React.createClass({
   render: function() {
-    console.log(this.props.data);
     return (
       <div className = 'pictureInfo' style={ this.props.styleObj }>
         <h2>{ this.props.data.infoHeading }</h2>
@@ -170,7 +184,6 @@ var PictureSet = React.createClass({
     }
     else {_globalIfDrag = false;}
   },
-  handleDragEnd: function(e) { console.log("dragend"); },
   componentDidMount: function() {
     console.log("component mounted");
     SukellusSession.stackElement.push(this);
@@ -183,7 +196,7 @@ var PictureSet = React.createClass({
   },
   render: function() {
     return (
-      <li onClick={ this.handleClick } onDragStart={ this.handleDragEnd } className='pictureListElement'>
+      <li onClick={ this.handleClick } className='pictureListElement'>
         <div className='screen'>
           <Picture url={ this.props.data.url } cName="picture"/>
           <PictureInfo data={ this.props.data } styleObj={ this.state.styleObj } />
@@ -211,16 +224,42 @@ var VacationPicture = React.createClass({
 });
 
 var VacationElement = React.createClass({
+  handleScroll: function(e) {
+    this.state.counter++;
+    if (this.state.counter > 70) {
+      var newPos = (this.state.positio + 1)%this.state.bgPictureAmount;
+      this.setState({
+        positio: newPos,
+        counter: 0
+        })
+    }
+    this.state.counter++;
+  },
+  getInitialState: function() {
+    return {
+      pictures: this.props.data.pictureUrls,
+      styleObj: {},
+      positio: 0,
+      bgPictureAmount: 3,
+      counter: 0
+      };
+  },
   render: function() {
-    var pictureUrls = this.props.data.pictureUrls.map(function(url) {
-      return <VacationPicture url={ url } />
-    });
     return(
-      <div className={ 'vacatonListElement' }>
-        <h3>{ this.props.data.infoHeading }</h3>
-        <p>{ this.props.data.infoText }</p>
-        <div className={ 'VacationPictureSet' }>
-          { pictureUrls }
+      <div className="vacationBG" style={ {background: 'url('+this.state.pictures[this.state.positio]+')'}}>
+        <div className={ 'vacationElement' } onScroll={this.handleScroll}>
+          <h3>{ this.props.data.infoHeading }</h3>
+          <p>{ this.props.data.infoText }</p>
+          <button className="action-button shadow animate blue" style={ {display: 'inline'} }> Decline </button>
+          <button className="action-button shadow animate green" style={ {display: 'inline'} }> Buy </button>
+          <div style={ {display: 'none'} }>
+            <button style={ {display: 'block'} }> Osta </button>
+            <button style={ {display: 'block'} }> Osta </button>
+            <button style={ {display: 'block'} }> Osta </button>
+            <button style={ {display: 'block'} }> Osta </button>
+            <button style={ {display: 'block'} }> Osta </button>
+            <button style={ {display: 'block'} }> Osta </button>
+          </div>
         </div>
       </div>
     );
@@ -233,11 +272,18 @@ var VacationElement = React.createClass({
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var ScreenContent = React.createClass({
   loadDataFromServer: function(url) {
+    var urlEnding = '?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder='+
+      this.state.randomIdOrder+'&type='+this.state.type;
     $.ajax({
-        url: url,
+        url: url+urlEnding,
         dataType: 'json',
         success: function(data) {
-          this.setState({data: data});
+          this.setState({
+            data: data,
+            numberOfPictures: '5',
+            randomIdOrder: '1',
+            type: 'MorePictures'
+          });
           console.log(data);
           console.log("ajax GET");
         }.bind(this),
@@ -268,10 +314,16 @@ var ScreenContent = React.createClass({
   },
   getInitialState: function() {
         console.log("init");
-        return { data: {data: ''} };
+        return {
+          data: {data: ''},
+          url: this.props.url,
+          numberOfPictures: '15',
+          randomIdOrder: '1',
+          type: 'InitialPictures'
+          };
   },
   componentWillMount: function() {
-      this.loadDataFromServer(this.props.url);
+      this.loadDataFromServer(this.state.url);
       SukellusSession.screenContainer = this;
   },
   componentDidUpdate: function() {
@@ -304,6 +356,7 @@ var ScreenContent = React.createClass({
       // var vacationElements = data.map(function(data) {
       //   return <VacationList data={ data } key={ data.id } />;
       // });
+      // this.setState({type: 'BestHolidays'});
       return (
         <div className='screenContainer'>
           <div className='screen'>
@@ -318,6 +371,7 @@ var ScreenContent = React.createClass({
       return (
         <div className='screenContainer'>
           <div className='screen'>
+            <VacationElement data={ data } />
           </div>
         </div>
       );
@@ -345,4 +399,4 @@ var Viewport = React.createClass({
     }
 });
 
-React.renderComponent(<Viewport url={ '/pictureset?numberOfPictures=15&randomIdOrder=1' } />, document.getElementById("container"));
+React.renderComponent(<Viewport url={ '/users' } />, document.getElementById("container"));

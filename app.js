@@ -32,7 +32,7 @@ app.use(session({secret: 'sukelluspojat is the best'}));
 app.use('/', routes);
 app.use('/users', users);
 
-app.get('/pictureset', pictureset.handleGetRequest);
+app.get('/pictureset', pictureset.handleGetRequestNew);
 
 
 // catch 404 and forward to error handler
