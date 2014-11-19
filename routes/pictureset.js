@@ -29,6 +29,7 @@ module.exports = function(db) {
   // req.query.numberOfPictures = number of wanted pictures
   //
   exports.handleGetRequest = function(req, res) {
+    console.log("+++++old reg handler");
     // Handles get request, if need for pictures -> deliver them otherwise do something else
     try {
       //tests();
@@ -52,7 +53,8 @@ module.exports = function(db) {
   // Used by other files.
   //
   exports.handleGetRequestNew = function(req, res) {
-    if(req.query.type == "InitialPictures") {
+    console.log("+++++new reg handler");
+    if(req.query.type === "InitialPictures") {
       //--- needs:
       //-req.query.numberOfPictures: Wanted amount of returned DB entries.
       //--- should return:
@@ -75,7 +77,7 @@ module.exports = function(db) {
         console.log(err);
       }
     }
-    else if(req.query.type == "MorePictures") {
+    else if(req.query.type === "MorePictures") {
       //--- needs:
       //-req.query.numberOfPictures: Wanted amount of returned DB entries.
       //-req.query.randomIdOrder: Tells which pictures are still unasked and
@@ -106,7 +108,7 @@ module.exports = function(db) {
         console.log(err);
       }
     }
-    else if(req.query.type == "BestHolidays") {
+    else if(req.query.type === "BestHolidays") {
       //--- needs:
       //-req.query.accepted: 1D array of accepted tags for previous picture set only
       //-req.query.rejected: 1D array of rejected tags for previous picture set only
@@ -453,6 +455,9 @@ module.exports = function(db) {
     return _.difference(_.union(tagsForHoliday), _.intersection(tagsForHoliday));
   }
 
+  
+  
+  
   function tests() {
     var local_order;
     var local_scores;
