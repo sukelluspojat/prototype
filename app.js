@@ -33,6 +33,7 @@ app.use('/', routes);
 app.use('/users', users);
 
 app.get('/pictureset', pictureset.handleGetRequestNew);
+app.post('/pictureset', pictureset.handlePostRequest);
 
 
 // catch 404 and forward to error handler

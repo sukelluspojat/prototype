@@ -6,7 +6,8 @@ var SukellusSession = {
   stackElement: [],
   dataSet:  [],
   acceptedTags: [],
-  declinedTags: []
+  declinedTags: [],
+  preferredTags: []
 }
 /////////////////////////////////////////////
 /////////////// STACK INIT ///////////////
@@ -88,26 +89,59 @@ stack.on('dragend', function (e) {
 /////////////////////////////////////////////////////////////////////
 
 var handleTag = function(tags, direction) {
+  var tag, pTag;
   if (direction === 1) {
     //accepted
     for (var i=0;i<tags.length; i++) {
       if (SukellusSession.acceptedTags.indexOf(tags[i]) === -1) {
-        SukellusSession.acceptedTags.push(tags[i]);
-        break;
+        if (SukellusSession.preferredTags.indexOf(tags[i]) != -1) {
+          pTag = tags[i];
+        }
+        tag = tags[i];
       }
     }
+    if (pTag) {
+      SukellusSession.acceptedTags.push(pTag);
+    }
+    else if(tag) {
+      SukellusSession.acceptedTags.push(tag);
+    }
+    else {
+      SukellusSession.acceptedTags.push(tags[tags.length-1]);
+    }
+
   }
   else {
     //declined
     for (var i=0;i<tags.length; i++) {
       if (SukellusSession.declinedTags.indexOf(tags[i]) === -1) {
-        SukellusSession.declinedTags.push(tags[i]);
-        break;
+        if (SukellusSession.preferredTags.indexOf(tags[i]) != -1) {
+          pTag = tags[i];
+        }
+        tag = tags[i];
       }
     }
+    if (pTag) {
+      SukellusSession.declinedTags.push(pTag);
+    }
+    else if (tag) {
+      SukellusSession.declinedTags.push(tag);
+    }
+    else {
+      SukellusSession.declinedTags.push(tags[tags.length-1]);
+    }
   }
-  document.getElementById("tags").innerHTML = "Accepted: " + SukellusSession.acceptedTags +
-                                              "<br>Declined: " + SukellusSession.declinedTags;
+  document.getElementById("tags").innerHTML = "Accepted: " + SukellusSession.acceptedTags.join(', ') +
+                                              "<br>Declined: " + SukellusSession.declinedTags.join(', ');
+}
+
+var handlePreferredTag = function(tag) {
+    if (SukellusSession.preferredTags.indexOf(tag) != -1) {
+      return true;
+    }
+    else {
+      return false;
+    }
 }
 
 document.onkeydown = function(e) {
@@ -271,18 +305,18 @@ var VacationElement = React.createClass({
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var ScreenContent = React.createClass({
-  loadDataFromServer: function(url) {
-    var urlEnding = '?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder='+
-      this.state.randomIdOrder+'&type='+this.state.type;
+  loadDataFromServer: function() {
+    var urlEnding = '?numberOfPictures='+this.state.numberOfPictures+
+      '&randomIdOrder='+ JSON.stringify(this.state.randomIdOrder) + '&type='+this.state.type;
     $.ajax({
-        url: url+urlEnding,
+        url: this.props.url + urlEnding,
         dataType: 'json',
         success: function(data) {
           this.setState({
             data: data,
             numberOfPictures: '5',
-            randomIdOrder: '1',
-            type: 'MorePictures'
+            randomIdOrder: data.randomIdOrder,
+            type: data.type
           });
           console.log(data);
           console.log("ajax GET");
@@ -292,16 +326,18 @@ var ScreenContent = React.createClass({
         }.bind(this)
     });
   },
-  handleEmptySet: function() {
+  handleEmptySet: function(url) {
     console.log("handleEmptySet");
     //post tags to server
     $.ajax({
-        url: this.props.url,
-        type: 'POST',
+        url: this.props.url + url,
+        type: 'GET',
         dataType: 'json',
-        data: {
-          accepted: SukellusSession.acceptedTags,
-          declined: SukellusSession.declinedTags
+        data: {data: {
+            accepted: SukellusSession.acceptedTags,
+            declined: SukellusSession.declinedTags,
+            randomIdOrder: this.state.randomIdOrder
+          }
         },
         success: function(data) {
           this.loadDataFromServer('/users');
@@ -312,13 +348,28 @@ var ScreenContent = React.createClass({
         }.bind(this)
     });
   },
+  buildUrl: function() {
+    var url, beginnig, acceptedTags, declinedTags;
+    beginnig = '?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder='+
+      this.state.randomIdOrder+'&type='+this.state.type;
+    for (var i=0;i<SukellusSession.acceptedTags;i++) {
+      acceptedTags += '&accepted=' + SukellusSession.acceptedTags[i];
+    }
+    for (var i=0;i<SukellusSession.declinedTags;i++) {
+      declinedTags += '&declined=' + SukellusSession.declinedTagsTags[i];
+    }
+
+    // this.handleEmptySet(beginnig+acceptedTags+declinedTags);
+
+
+  },
   getInitialState: function() {
         console.log("init");
         return {
           data: {data: ''},
           url: this.props.url,
-          numberOfPictures: '15',
-          randomIdOrder: '1',
+          numberOfPictures: '2',
+          randomIdOrder: [],
           type: 'InitialPictures'
           };
   },
@@ -399,4 +450,4 @@ var Viewport = React.createClass({
     }
 });
 
-React.renderComponent(<Viewport url={ '/users' } />, document.getElementById("container"));
+React.renderComponent(<Viewport url={ '/pictureset' } />, document.getElementById("container"));
