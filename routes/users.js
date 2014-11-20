@@ -4,7 +4,7 @@ var router = express.Router();
 var dummyCounter = 1;
 /* GET users listing. */
 router.get('/', function(req, res) {
-  if (true) {
+  if (false) {
     res.json(
       {
         picture: 1,

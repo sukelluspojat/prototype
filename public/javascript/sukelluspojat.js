@@ -1,4 +1,5 @@
 // quick solution for event handling problems
+var num = 'aaaaaaaaaaaaaaaaaaaaaa';
 var _globalIfDrag = false;
 
 var SukellusSession = {
@@ -16,74 +17,79 @@ var stack,
   throwOutConfidenceBind,
   throwOutOffset,
   throwOutConfidenceElements = {};
-throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind');
-throwOutOffset = document.querySelector('#throw-out-offset');
-var config = {
-  throwOutConfidence: function (offset, element) {
-    throwOutOffset.innerHTML = offset;
-    if (Math.abs(offset) > 200) {
-      return 1;
+
+var initStack = function() {
+  throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind');
+  throwOutOffset = document.querySelector('#throw-out-offset');
+  var config = {
+    throwOutConfidence: function (offset, element) {
+      throwOutOffset.innerHTML = offset;
+      if (Math.abs(offset) > 200) {
+        return 1;
+      }
+      else {
+        return Math.min(Math.abs(offset) / 200, 1);
+      }
     }
-    else {
-      return Math.min(Math.abs(offset) / 200, 1);
-    }
-  }
-};
-stack = gajus.Swing.Stack(config);
-throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind'),
+  };
+  stack = gajus.Swing.Stack(config);
+  throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind'),
 
 
-stack.on('throwout', function (e) {
-    var lastIndex, parent, direction;
-    toastr.options = {
-      "showDuration": "300",
-      "hideDuration": "300",
-      "timeOut": "1000"
-    }
-    // the last react componen on the list
-    lastIndex = SukellusSession.stackElement.length - 1;
-    handleTag(SukellusSession.stackElement[lastIndex].props.data.tags, e.throwDirection);
-    if (lastIndex === 0) {
-      SukellusSession.screenContainer.buildUrl();
-    }
-    if (e.throwDirection === 1) {
-      toastr.options.positionClass = "toast-top-right";
-      toastr.success('Yes!');
-    }
-    else {
-      toastr.options.positionClass = "toast-top-left";
-      toastr.error("No!");
-    }
-    // Use tags
-    // check if last element -> let the server decide what to send next
-    SukellusSession.stackElement.pop();
-    parent = e.target.parentNode;
-    console.log(e.target.style.display);
-    e.target.classList.remove('in-deck');
-    e.target.classList.add('off-deck');
-    toastr.clear();
-});
+  stack.on('throwout', function (e) {
+      var lastIndex, parent, direction;
+      toastr.options = {
+        "showDuration": "300",
+        "hideDuration": "300",
+        "timeOut": "1000"
+      }
+      // the last react componen on the list
+      lastIndex = SukellusSession.stackElement.length - 1;
+      handleTag(SukellusSession.stackElement[lastIndex].props.data.tags, e.throwDirection);
+      if (lastIndex === 0) {
+        SukellusSession.screenContainer.buildUrl();
+      }
+      if (e.throwDirection === 1) {
+        toastr.options.positionClass = "toast-top-right";
+        toastr.success('Yes!');
+      }
+      else {
+        toastr.options.positionClass = "toast-top-left";
+        toastr.error("No!");
+      }
+      // Use tags
+      // check if last element -> let the server decide what to send next
+      SukellusSession.stackElement.pop();
+      console.log(e.target.style.display);
+      e.target.classList.remove('in-deck');
+      e.target.classList.add('off-deck');
+      // e.target.parentNode.removeChild(e.target);
+      toastr.clear();
+  });
 
-stack.on('dragmove', function (e) {
-  throwOutConfidenceElements[e.throwDirection == gajus.Swing.Card.DIRECTION_RIGHT ? 'yes' : 'no']
-    .opacity = e.throwOutConfidence - 0.3;
-  throwOutConfidenceBind.innerHTML = e.throwOutConfidence.toFixed(2);
-});
-stack.on('dragstart', function (e) {
-  console.log("drag start stack");
-  throwOutConfidenceElements.yes = e.target.querySelector('.yes').style;
-  throwOutConfidenceElements.no = e.target.querySelector('.no').style;
+  stack.on('dragmove', function (e) {
+    throwOutConfidenceElements[e.throwDirection == gajus.Swing.Card.DIRECTION_RIGHT ? 'yes' : 'no']
+      .opacity = e.throwOutConfidence - 0.3;
+    throwOutConfidenceBind.innerHTML = e.throwOutConfidence.toFixed(2);
+  });
+  stack.on('dragstart', function (e) {
+    console.log("drag start stack");
+    throwOutConfidenceElements.yes = e.target.querySelector('.yes').style;
+    throwOutConfidenceElements.no = e.target.querySelector('.no').style;
 
 
-});
-stack.on('dragend', function (e) {
-  console.log("drag end stack");
-  _globalIfDrag = true;
-  if (e.throwOutConfidence != 1) {
-      throwOutConfidenceElements.yes.opacity = 0;
-      throwOutConfidenceElements.no.opacity = 0;
-  }
-});
+  });
+  stack.on('dragend', function (e) {
+    console.log("drag end stack");
+    _globalIfDrag = true;
+    if (e.throwOutConfidence != 1) {
+        throwOutConfidenceElements.yes.opacity = 0;
+        throwOutConfidenceElements.no.opacity = 0;
+    }
+  });
+
+  UpdateStack();
+}
 /////////////////////////////////////////////////////////////////////
 /////////////////////// Helper functions ///////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -172,11 +178,12 @@ var removeFromStack = function(direction) {
 
 var UpdateStack = function() {
   // update stack
-  console.log("Stack updated");
   [].forEach.call(document.querySelectorAll('.stackBinder li'), function (targetElement) {
       stack.createCard(targetElement);
       targetElement.classList.add('in-deck');
+      targetElement.classList.remove('off-deck');
   });
+  console.log("Stack updated");
 }
 /////////////////////////////////////////////////////////////////////
 /////////////////////// REACT PART ///////////////////////
@@ -229,6 +236,7 @@ var PictureSet = React.createClass({
       return { styleObj: { display: 'none'} };
   },
   render: function() {
+    console.log("pictureset");
     return (
       <li onClick={ this.handleClick } className='pictureListElement'>
         <div className='screen'>
@@ -260,14 +268,20 @@ var VacationPicture = React.createClass({
 var VacationElement = React.createClass({
   handleScroll: function(e) {
     this.state.counter++;
-    if (this.state.counter > 70) {
+    if (this.state.counter > 90) {
       var newPos = (this.state.positio + 1)%this.state.bgPictureAmount;
       this.setState({
         positio: newPos,
         counter: 0
-        })
+      })
     }
     this.state.counter++;
+  },
+  handleMouseOver: function(e) {
+    var newPos = (this.state.positio + 1)%this.state.bgPictureAmount;
+    this.setState({
+      positio: newPos
+    })
   },
   getInitialState: function() {
     return {
@@ -275,24 +289,33 @@ var VacationElement = React.createClass({
       styleObj: {},
       positio: 0,
       bgPictureAmount: 3,
-      counter: 0
+      counter: 0,
+      showOptions: 'none',
+      showInfo: 'auto'
       };
+  },
+  handleDeclineClick: function() {
+    this.setState({
+      showOptions: 'block',
+      showInfo: 'none'
+    })
   },
   render: function() {
     return(
       <div className="vacationBG" style={ {background: 'url('+this.state.pictures[this.state.positio]+')'}}>
-        <div className={ 'vacationElement' } onScroll={this.handleScroll}>
-          <h3>{ this.props.data.infoHeading }</h3>
-          <p>{ this.props.data.infoText }</p>
-          <button className="action-button shadow animate blue" style={ {display: 'inline'} }> Decline </button>
-          <button className="action-button shadow animate green" style={ {display: 'inline'} }> Buy </button>
-          <div style={ {display: 'none'} }>
-            <button style={ {display: 'block'} }> Osta </button>
-            <button style={ {display: 'block'} }> Osta </button>
-            <button style={ {display: 'block'} }> Osta </button>
-            <button style={ {display: 'block'} }> Osta </button>
-            <button style={ {display: 'block'} }> Osta </button>
-            <button style={ {display: 'block'} }> Osta </button>
+        <div className={ 'vacationElement' } onClick={this.handleScroll}>
+          <div style={{display: this.state.showInfo}}>
+            <h3>{ this.props.data.infoHeading }</h3>
+            <p>{ this.props.data.infoText }</p>
+            <button className="action-button shadow animate blue" style={ {display: 'inline'} } onClick={ this.handleDeclineClick }> Decline </button>
+            <button className="action-button shadow animate green" style={ {display: 'inline'} }> Buy </button>
+          </div>
+          <div className="declineButtonContainer" style={ {display: this.state.showOptions} }>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Price </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Location </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Distance </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Addtional Services </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Other </button>
           </div>
         </div>
       </div>
@@ -329,22 +352,22 @@ var ScreenContent = React.createClass({
     });
   },
   handleEmptySet: function(url) {
-    console.log("handleEmptySet");
     $.ajax({
       url: this.props.url+'?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder=' +
         JSON.stringify(this.state.randomIdOrder) +'&type='+this.state.type +'&numberInContention='+
         this.state.numberInContention + url,
       dataType: 'json',
-      timeout: 3000,
       success: function(data) {
-        console.log("success");
         console.log(data);
         this.setState({
           data: data,
           numberOfPictures: '5',
           randomIdOrder: data.randomIdOrder,
           type: data.type,
+          scores: data.scores
         });
+        console.log("handleEmptySet");
+
       }.bind(this),
       error: function(error) {
         console.log(error);
@@ -370,23 +393,25 @@ var ScreenContent = React.createClass({
 
   },
   getInitialState: function() {
-        console.log("init");
-        return {
-          data: {data: ''},
-          url: this.props.url,
-          numberOfPictures: '2',
-          randomIdOrder: [],
-          type: 'InitialPictures',
-          numberInContention: '5'
-          };
+    console.log("init");
+    return {
+      data: {data: ''},
+      url: this.props.url,
+      numberOfPictures: '5',
+      randomIdOrder: [],
+      type: 'InitialPictures',
+      numberInContention: '5',
+      scores: []
+      };
   },
   componentWillMount: function() {
+      console.log("jou");
       this.loadDataFromServer(this.state.url);
       SukellusSession.screenContainer = this;
   },
   componentDidUpdate: function() {
+    initStack();
     console.log("DidUpdate");
-    UpdateStack();
   },
   render: function() {
     var dataType, data;
@@ -401,7 +426,7 @@ var ScreenContent = React.createClass({
     }
     else if (dataType.picture === 1) {
       var pictures = data.map(function(data) {
-        return <PictureSet data={ data } key={ data.id } />;
+        return <PictureSet data={ data } key={ data._id } />;
       });
       return (
         <ul className = "stack stackBinder">
