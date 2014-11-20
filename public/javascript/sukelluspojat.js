@@ -307,7 +307,9 @@ var VacationElement = React.createClass({
 var ScreenContent = React.createClass({
   loadDataFromServer: function() {
     var urlEnding = '?numberOfPictures='+this.state.numberOfPictures+
-      '&randomIdOrder='+ JSON.stringify(this.state.randomIdOrder) + '&type='+this.state.type;
+      '&randomIdOrder='+ JSON.stringify(this.state.randomIdOrder) +
+      '&type='+this.state.type + '&numberInContention='+
+      this.state.numberInContention;
     $.ajax({
         url: this.props.url + urlEnding,
         dataType: 'json',
@@ -330,7 +332,8 @@ var ScreenContent = React.createClass({
     console.log("handleEmptySet");
     $.ajax({
       url: this.props.url+'?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder=' +
-        JSON.stringify(this.state.randomIdOrder) +'&type='+this.state.type + url,
+        JSON.stringify(this.state.randomIdOrder) +'&type='+this.state.type +'&numberInContention='+
+        this.state.numberInContention + url,
       dataType: 'json',
       timeout: 3000,
       success: function(data) {
@@ -340,7 +343,7 @@ var ScreenContent = React.createClass({
           data: data,
           numberOfPictures: '5',
           randomIdOrder: data.randomIdOrder,
-          type: data.type
+          type: data.type,
         });
       }.bind(this),
       error: function(error) {
@@ -373,7 +376,8 @@ var ScreenContent = React.createClass({
           url: this.props.url,
           numberOfPictures: '2',
           randomIdOrder: [],
-          type: 'InitialPictures'
+          type: 'InitialPictures',
+          numberInContention: '5'
           };
   },
   componentWillMount: function() {
@@ -453,4 +457,4 @@ var Viewport = React.createClass({
     }
 });
 
-React.renderComponent(<Viewport url={ '/pictureset' } />, document.getElementById("container"));
+React.renderComponent(<Viewport url={ '/users' } />, document.getElementById("container"));

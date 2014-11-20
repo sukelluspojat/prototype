@@ -58,7 +58,7 @@ module.exports = function(db) {
     console.log("+++++new reg handler");
     console.log(req.query);
     var nq = req.query;
-    
+
     try {
       for(var key in req.query) {
         if(req.query.hasOwnProperty(key) && key !== 'type') {
@@ -68,12 +68,12 @@ module.exports = function(db) {
         else {console.log("skipped");}
       }
     } catch (err) {console.log(err);}
-    
+
     console.log("parsed?");
     console.log(nq);
-    
-    
-    
+
+
+
     if(nq.type === "InitialPictures") {
       console.log(nq)
       //--- needs:
@@ -115,17 +115,6 @@ module.exports = function(db) {
       //-scores: Points after previous pictures for 'numberInContention' best
       //holiday packages.
       //-tags: List of most effective tags for holiday packages still in contention. Try to pick one of these when asking user.
-      console.log(req.query.data);
-      try {
-        var x = JSON.parse(req.query.data);
-        console.log(x.accepted);
-
-      }
-      catch (err) {
-        console.log("not valid json");
-        console.log(err);
-      }
-
       try {
         moreRandomPictures(nq)
         .then(function(returned) {
@@ -249,7 +238,6 @@ module.exports = function(db) {
         .then(function(bestScores) {
           getTagList(bestScores)
           .then(function(tagList) {
-            console.log(tagList);
             getRandomPicturesWithOrderAndTagList(query.randomIdOrder, tagList, query.numberOfPictures)
             .then(function(data) {
               deferred.resolve([data, bestScores, tagList]);
@@ -419,7 +407,6 @@ module.exports = function(db) {
             }).length;
             // decrease points
             entry[2] = entry[2] - rejCount * tagMultipPair[1] * negMultip;
-
           });
         }
       );
@@ -427,7 +414,7 @@ module.exports = function(db) {
       deferred.resolve(holidayScores.slice(0, Math.min(n, holidayScores.length)));
     }
     catch(err) {
-		  console.log(err);
+		  console.log(err.stack);
       deferred.reject("error");
 		}
 
@@ -440,7 +427,7 @@ module.exports = function(db) {
     var deferred = q.defer();
 
     try {
-      getBestScoredAlternatives(query.scores, query.numberReturned, query.data.accepted, query.data.rejected) //n best scores
+      getBestScoredAlternatives(query.scores, query.numberOfReturned, query.data.accepted, query.data.rejected) //n best scores
       .then(function(bestScores) {
         //console.log(bestScores);
         //bestScores = [_id, [[tag, multiplier] pairs], score]
@@ -501,14 +488,27 @@ module.exports = function(db) {
   function getTagList(bestScores) { //[_id, [[tag, multiplier] pairs], score]
     var deferred = q.defer();
     console.log("at getTagList");
-
+    console.log(bestScores);
     var tagsForHoliday = _.map(bestScores, function(tuple) {
       return _.map(tuple[1], function(tagMultipPair) {
         return tagMultipPair[0];
       });
     });
-
-    deferred.resolve(_.difference(_.reduce(tagsForHoliday, function(a, b){ return _.union(a, b); }), _.reduce(tagsForHoliday, function(a, b){ return _.intersection(a, b); })));
+    console.log(tagsForHoliday);
+    try {
+      deferred.resolve(
+        _.difference(
+          _.reduce(tagsForHoliday, function(a, b){
+            return _.union(a, b); }),
+          _.reduce(tagsForHoliday, function(a, b){
+            return _.intersection(a, b);
+            })
+          )
+        );
+    }
+    catch (err) {
+      console.log(err);
+    }
 
     return deferred.promise;
   }
