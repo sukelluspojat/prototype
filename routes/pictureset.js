@@ -35,6 +35,7 @@ module.exports = function(db) {
         res.json({
           picture: 1, //means what??
           vacationInfo: 0, //means what??
+          tags: [],
           data: data[0] //HERE: DB entries for req.query.numberOfPictures different pictures
         });
       });
@@ -63,9 +64,11 @@ module.exports = function(db) {
         .then(function(returned) {
           console.log("JSON SEND 'InitialPictures'");
           res.json({
+            type: "MorePictures",
             picture: 1,
             vacationInfo: 0,
             data: returned[0],
+            tags: [],
             randomIdOrder: returned[1]
           });
         });
@@ -93,6 +96,7 @@ module.exports = function(db) {
         .then(function(returned) {
           console.log("JSON SEND 'MorePictures'");
           res.json({
+            type: "BestHolidays",
             picture: 1,
             vacationInfo: 0,
             data: returned[0],
@@ -118,8 +122,10 @@ module.exports = function(db) {
         .then(function(returned) {
           console.log("JSON SEND 'BestHolidays'");
           res.json({
+            type: "BestHolidays", 
             picture: 0,
             vacationInfo: 1,
+            tags: [],
             data: returned[0]
           });
         });
