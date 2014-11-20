@@ -69,6 +69,7 @@ module.exports = function(db) {
             vacationInfo: 0,
             data: returned[0],
             tags: [],
+            scores: [],
             randomIdOrder: returned[1]
           });
         });
@@ -101,7 +102,8 @@ module.exports = function(db) {
             vacationInfo: 0,
             data: returned[0],
             scores: returned[1],
-            tags: returned[2]
+            tags: returned[2],
+            randomIdOrder: []
           });
         });
       }
@@ -126,7 +128,9 @@ module.exports = function(db) {
             picture: 0,
             vacationInfo: 1,
             tags: [],
-            data: returned[0]
+            data: returned[0],
+            scores: [],
+            randomIdOrder: []
           });
         });
       }
