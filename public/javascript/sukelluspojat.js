@@ -44,7 +44,7 @@ stack.on('throwout', function (e) {
     lastIndex = SukellusSession.stackElement.length - 1;
     handleTag(SukellusSession.stackElement[lastIndex].props.data.tags, e.throwDirection);
     if (lastIndex === 0) {
-      SukellusSession.screenContainer.handleEmptySet();
+      SukellusSession.screenContainer.buildUrl();
     }
     if (e.throwDirection === 1) {
       toastr.options.positionClass = "toast-top-right";
@@ -328,38 +328,41 @@ var ScreenContent = React.createClass({
   },
   handleEmptySet: function(url) {
     console.log("handleEmptySet");
-    //post tags to server
     $.ajax({
-        url: this.props.url + url,
-        type: 'GET',
-        dataType: 'json',
-        data: {data: {
-            accepted: SukellusSession.acceptedTags,
-            declined: SukellusSession.declinedTags,
-            randomIdOrder: this.state.randomIdOrder
-          }
-        },
-        success: function(data) {
-          this.loadDataFromServer('/users');
-          console.log("ajax POST");
-        }.bind(this),
-        error: function(error) {
-          console.log(error);
-        }.bind(this)
+      url: this.props.url+'?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder=' +
+        JSON.stringify(this.state.randomIdOrder) +'&type='+this.state.type + url,
+      dataType: 'json',
+      timeout: 3000,
+      success: function(data) {
+        console.log("success");
+        console.log(data);
+        this.setState({
+          data: data,
+          numberOfPictures: '5',
+          randomIdOrder: data.randomIdOrder,
+          type: data.type
+        });
+      }.bind(this),
+      error: function(error) {
+        console.log(error);
+        console.log("Timeout");
+      }.bind(this)
     });
   },
   buildUrl: function() {
-    var url, beginnig, acceptedTags, declinedTags;
+    var beginnig, acceptedTags, declinedTags;
     beginnig = '?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder='+
-      this.state.randomIdOrder+'&type='+this.state.type;
-    for (var i=0;i<SukellusSession.acceptedTags;i++) {
-      acceptedTags += '&accepted=' + SukellusSession.acceptedTags[i];
-    }
-    for (var i=0;i<SukellusSession.declinedTags;i++) {
-      declinedTags += '&declined=' + SukellusSession.declinedTagsTags[i];
-    }
+      JSON.stringify(this.state.randomIdOrder) +'&type='+this.state.type;
+    acceptedTags = '&accepted=' + JSON.stringify(SukellusSession.acceptedTags);
+    declinedTags = '&declined=' + JSON.stringify(SukellusSession.declinedTags);
 
-    // this.handleEmptySet(beginnig+acceptedTags+declinedTags);
+    var url = {
+      accepted: SukellusSession.acceptedTags,
+      declined: SukellusSession.declinedTags
+    }
+    var string = JSON.stringify(url);
+
+    this.handleEmptySet('&data='+string);
 
 
   },

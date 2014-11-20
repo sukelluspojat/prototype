@@ -115,6 +115,17 @@ module.exports = function(db) {
       //-scores: Points after previous pictures for 'numberInContention' best
       //holiday packages.
       //-tags: List of most effective tags for holiday packages still in contention. Try to pick one of these when asking user.
+      console.log(req.query.data);
+      try {
+        var x = JSON.parse(req.query.data);
+        console.log(x.accepted);
+
+      }
+      catch (err) {
+        console.log("not valid json");
+        console.log(err);
+      }
+
       try {
         moreRandomPictures(nq)
         .then(function(returned) {
@@ -238,6 +249,7 @@ module.exports = function(db) {
         .then(function(bestScores) {
           getTagList(bestScores)
           .then(function(tagList) {
+            console.log(tagList);
             getRandomPicturesWithOrderAndTagList(query.randomIdOrder, tagList, query.numberOfPictures)
             .then(function(data) {
               deferred.resolve([data, bestScores, tagList]);
