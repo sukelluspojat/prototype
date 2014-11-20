@@ -20,36 +20,41 @@ module.exports = function(db) {
   var negMultip = 0.5; // used to make rejections to have less effect on scores
 
 
+  
+  
+  
+  
   //--------------------------------------------
   // Used by other files. Returns picture data with .json.
   // req.query.numberOfPictures = number of wanted pictures
   //
+  // exports.handleGetRequest = function(req, res) {
+    // console.log("+++++old reg handler");
+    // // Handles get request, if need for pictures -> deliver them otherwise do something else
+    // try {
+      // // tests(); //uncomment for an additional test set that prints to console.log
+      // initialRandomPictures(req.query)
+      // .then(function(data) {
+        // console.log("JSON SEND");
+        // res.json({
+          // picture: 1, //means what??
+          // vacationInfo: 0, //means what??
+          // tags: [],
+          // data: data[0] //HERE: DB entries for req.query.numberOfPictures different pictures
+        // });
+      // });
+    // }
+    // catch (err) {
+      // console.log(err);
+    // }
+	// }
+
   exports.handlePostRequest = function(req,res) {
     console.log(req.body.data);
     res.json({ ok: "ok"});
   }
-  exports.handleGetRequest = function(req, res) {
-    console.log("+++++old reg handler");
-    // Handles get request, if need for pictures -> deliver them otherwise do something else
-    try {
-      // tests(); //uncomment for an additional test set that prints to console.log
-      initialRandomPictures(req.query)
-      .then(function(data) {
-        console.log("JSON SEND");
-        res.json({
-          picture: 1, //means what??
-          vacationInfo: 0, //means what??
-          tags: [],
-          data: data[0] //HERE: DB entries for req.query.numberOfPictures different pictures
-        });
-      });
-    }
-    catch (err) {
-      console.log(err);
-    }
-	}
-
-
+  
+  
   //--------------------------------------------
   // Used by other files.
   //
@@ -70,13 +75,10 @@ module.exports = function(db) {
     } catch (err) {console.log(err);}
 
     console.log("parsed?");
-    console.log(nq);
-
-
 
     if(nq.type === "InitialPictures") {
-      console.log(nq)
-      //--- needs:
+      console.log(nq);
+      //--- uses:
       //-req.query.numberOfPictures: Wanted amount of returned DB entries.
       //--- should return:
       //-data: DB entries for 'numberOfPictures' random pictures
@@ -86,6 +88,7 @@ module.exports = function(db) {
         initialRandomPictures(nq)
         .then(function(returned) {
           console.log("JSON SEND 'InitialPictures'");
+          console.log(returned);
           res.json({
             type: "MorePictures",
             picture: 1,
@@ -102,12 +105,13 @@ module.exports = function(db) {
       }
     }
     else if(nq.type === "MorePictures") {
-      //--- needs:
+      console.log(nq);
+      //--- uses:
       //-req.query.numberOfPictures: Wanted amount of returned DB entries.
       //-req.query.randomIdOrder: Tells which pictures are still unasked and
       //gives user-specific randomized order of pictures.
       //-req.query.data.accepted: 1D array of accepted tags for previous picture set only
-      //-req.query.data.rejected: 1D array of rejected tags for previous picture set only
+      //-req.query.data.declined: 1D array of declined tags for previous picture set only
       //-req.query.numberInContention: Number of holiday packages kept in contention
       //for this set of pictures.
       //--- should return:
@@ -119,15 +123,29 @@ module.exports = function(db) {
         moreRandomPictures(nq)
         .then(function(returned) {
           console.log("JSON SEND 'MorePictures'");
-          res.json({
-            type: "BestHolidays",
-            picture: 1,
-            vacationInfo: 0,
-            data: returned[0],
-            scores: returned[1],
-            tags: returned[2],
-            randomIdOrder: []
-          });
+          console.log(returned);
+          if(true) {
+            res.json({
+              type: "BestHolidays",
+              picture: 1,
+              vacationInfo: 0,
+              data: returned[0],
+              scores: returned[1],
+              tags: returned[2],
+              randomIdOrder: []
+            });
+          }
+          else {
+            res.json({
+              type: "MorePictures",
+              picture: 1,
+              vacationInfo: 0,
+              data: returned[0],
+              scores: returned[1],
+              tags: returned[2],
+              randomIdOrder: []
+            });
+          }
         });
       }
       catch (err) {
@@ -135,9 +153,10 @@ module.exports = function(db) {
       }
     }
     else if(nq.type === "BestHolidays") {
-      //--- needs:
+      console.log(nq);
+      //--- uses:
       //-req.query.data.accepted: 1D array of accepted tags for previous picture set only
-      //-req.query.data.rejected: 1D array of rejected tags for previous picture set only
+      //-req.query.data.declined: 1D array of declined tags for previous picture set only
       //-req.query.numberReturned: number of returned packages
       //-req.query.scores: Points after previous pictures for best holiday packages
       //--- should return:
@@ -146,13 +165,14 @@ module.exports = function(db) {
         bestHolidays(nq)
         .then(function(returned) {
           console.log("JSON SEND 'BestHolidays'");
+          console.log(returned);
           res.json({
             type: "BestHolidays",
             picture: 0,
             vacationInfo: 1,
             tags: [],
             data: returned[0],
-            scores: [],
+            scores: returned[1],
             randomIdOrder: []
           });
         });
@@ -234,12 +254,20 @@ module.exports = function(db) {
     try {
       getInitializedHolidays()
       .then(function(scores) { //init scores
-        getBestScoredAlternatives(scores, query.numberInContention, query.data.accepted, query.data.rejected) //n best scores
+        console.log("-----------------------------initialized scores");
+        console.log(scores);
+        getBestScoredAlternatives(scores, query.numberInContention, query.data.accepted, query.data.declined) //n best scores
         .then(function(bestScores) {
+          console.log("-----------------------------'numberInContention' best scores");
+          console.log(bestScores);
           getTagList(bestScores)
           .then(function(tagList) {
+            console.log("-----------------------------preferred tags");
+            console.log(tagList);
             getRandomPicturesWithOrderAndTagList(query.randomIdOrder, tagList, query.numberOfPictures)
             .then(function(data) {
+              console.log("-----------------------------picture entries");
+              console.log(data);
               deferred.resolve([data, bestScores, tagList]);
             });
           });
@@ -384,7 +412,7 @@ module.exports = function(db) {
   //--------------------------------------------
   // Returns an array of n [_id, [[tag, multiplier] pairs], score] groups that
   // have highest scores.
-  function getBestScoredAlternatives(holidayScores, n, accepted, rejected) {
+  function getBestScoredAlternatives(holidayScores, n, accepted, declined) {
     var deferred = q.defer();
     console.log('at getBestScoredAlternatives');
 
@@ -401,8 +429,8 @@ module.exports = function(db) {
             }).length;
             // increase points
             entry[2] = entry[2] + accCount * tagMultipPair[1];
-            // count tag from rejected
-            rejCount = _.filter(rejected, function(tag){
+            // count tag from declined
+            rejCount = _.filter(declined, function(tag){
               return tag == tagMultipPair[0];
             }).length;
             // decrease points
@@ -425,22 +453,30 @@ module.exports = function(db) {
 
   function bestHolidays(query) {
     var deferred = q.defer();
-
-    try {
-      getBestScoredAlternatives(query.scores, query.numberOfReturned, query.data.accepted, query.data.rejected) //n best scores
-      .then(function(bestScores) {
-        //console.log(bestScores);
-        //bestScores = [_id, [[tag, multiplier] pairs], score]
-        getHolidaysForIds(_.map(bestScores, function(tuple) {return tuple[0];}))
-        .then(function(data) {
-          deferred.resolve([data]); //as an array for symmetry with others
+    
+    if(query.scores.length > 0) {
+      try {
+        getBestScoredAlternatives(query.scores, query.numberInContention, query.data.accepted, query.data.declined) //n best scores
+        .then(function(bestScores) {
+          console.log("-----------------------------best scores");
+          console.log(bestScores);
+          //format of bestScores = [_id, [[tag, multiplier] pairs], score]
+          getHolidaysForIds(_.map([bestScores[0]], function(tuple) {return tuple[0];}))
+          .then(function(data) {
+            console.log("-----------------------------holiday db entry");
+            console.log(data);
+            bestScores.shift();
+            deferred.resolve([data[0], bestScores]); //as an array for symmetry with others
+          });
         });
-      });
+      }
+      catch (err) {
+        console.log(err);
+      }
     }
-    catch (err) {
-      console.log(err);
+    else {
+      deferred.resolve([null,[]]);
     }
-
     return deferred.promise;
   }
 
@@ -527,7 +563,7 @@ module.exports = function(db) {
         console.log(returned[1]);
 
         console.log("\n***TEST: 'MorePictures'");
-        moreRandomPictures({numberOfPictures: 5, randomIdOrder: returned[1], accepted: ['beach', 'bar', 'reef'], rejected: ['kids', 'tropical', 'friends'], numberInContention: 5})
+        moreRandomPictures({numberOfPictures: 5, randomIdOrder: returned[1], accepted: ['beach', 'bar', 'reef'], declined: ['kids', 'tropical', 'friends'], numberInContention: 5})
        .then(function(ret) {
           console.log("***pictureData");
           console.log(ret[0]);
@@ -537,7 +573,7 @@ module.exports = function(db) {
           console.log(ret[2]);
 
           console.log("\n***TEST: 'BestHolidays'");
-          bestHolidays({accepted: ['beach', 'bar'], rejected: ['tropical', 'friends'], scores: ret[1], numberReturned: 3})
+          bestHolidays({accepted: ['beach', 'bar'], declined: ['tropical', 'friends'], scores: ret[1], numberReturned: 3})
           .then(function(re) {
             console.log("***holidayData");
             console.log(re[0]);

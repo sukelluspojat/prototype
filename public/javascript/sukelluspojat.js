@@ -330,7 +330,8 @@ var VacationElement = React.createClass({
 var ScreenContent = React.createClass({
   loadDataFromServer: function() {
     var urlEnding = '?numberOfPictures='+this.state.numberOfPictures+
-      '&randomIdOrder='+ JSON.stringify(this.state.randomIdOrder) +
+      '&randomIdOrder='+ JSON.stringify(this.state.randomIdOrder)+
+      '&scores='+ JSON.stringify(this.state.scores) +
       '&type='+this.state.type + '&numberInContention='+
       this.state.numberInContention;
     $.ajax({
@@ -341,7 +342,8 @@ var ScreenContent = React.createClass({
             data: data,
             numberOfPictures: '5',
             randomIdOrder: data.randomIdOrder,
-            type: data.type
+            type: data.type,
+            scores: data.scores
           });
           console.log(data);
           console.log("ajax GET");
@@ -353,8 +355,11 @@ var ScreenContent = React.createClass({
   },
   handleEmptySet: function(url) {
     $.ajax({
-      url: this.props.url+'?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder=' +
-        JSON.stringify(this.state.randomIdOrder) +'&type='+this.state.type +'&numberInContention='+
+      url: this.props.url +
+      '?numberOfPictures=' + this.state.numberOfPictures +
+      '&randomIdOrder=' + JSON.stringify(this.state.randomIdOrder) +
+      '&scores=' + JSON.stringify(this.state.scores) +
+      '&type='+this.state.type +'&numberInContention='+
         this.state.numberInContention + url,
       dataType: 'json',
       success: function(data) {
@@ -378,7 +383,8 @@ var ScreenContent = React.createClass({
   buildUrl: function() {
     var beginnig, acceptedTags, declinedTags;
     beginnig = '?numberOfPictures='+this.state.numberOfPictures+'&randomIdOrder='+
-      JSON.stringify(this.state.randomIdOrder) +'&type='+this.state.type;
+      JSON.stringify(this.state.randomIdOrder)+
+      '&scores='+ JSON.stringify(this.state.scores) +'&type='+this.state.type;
     acceptedTags = '&accepted=' + JSON.stringify(SukellusSession.acceptedTags);
     declinedTags = '&declined=' + JSON.stringify(SukellusSession.declinedTags);
 
@@ -482,4 +488,5 @@ var Viewport = React.createClass({
     }
 });
 
-React.renderComponent(<Viewport url={ '/users' } />, document.getElementById("container"));
+// React.renderComponent(<Viewport url={ '/users' } />, document.getElementById("container"));
+React.renderComponent(<Viewport url={ '/pictureset' } />, document.getElementById("container"));
