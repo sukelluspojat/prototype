@@ -56,7 +56,26 @@ module.exports = function(db) {
   exports.handleGetRequestNew = function(req, res) {
     // tests(); //uncomment for an additional test set that prints to console.log
     console.log("+++++new reg handler");
-    if(req.query.type === "InitialPictures") {
+    console.log(req.query);
+    var nq = req.query;
+    
+    try {
+      for(var key in req.query) {
+        if(req.query.hasOwnProperty(key) && key !== 'type') {
+          console.log("x");
+          nq[key] = JSON.parse(req.query[key]);
+        }
+        else {console.log("skipped");}
+      }
+    } catch (err) {console.log(err);}
+    
+    console.log("parsed?");
+    console.log(nq);
+    
+    
+    
+    if(nq.type === "InitialPictures") {
+      console.log(nq)
       //--- needs:
       //-req.query.numberOfPictures: Wanted amount of returned DB entries.
       //--- should return:
@@ -64,7 +83,7 @@ module.exports = function(db) {
       //-randomIdOrder: Tells which pictures are still unasked and
       //gives user-specific randomized order of pictures.
       try {
-        initialRandomPictures(req.query)
+        initialRandomPictures(nq)
         .then(function(returned) {
           console.log("JSON SEND 'InitialPictures'");
           res.json({
@@ -82,13 +101,13 @@ module.exports = function(db) {
         console.log(err);
       }
     }
-    else if(req.query.type === "MorePictures") {
+    else if(nq.type === "MorePictures") {
       //--- needs:
       //-req.query.numberOfPictures: Wanted amount of returned DB entries.
       //-req.query.randomIdOrder: Tells which pictures are still unasked and
       //gives user-specific randomized order of pictures.
-      //-req.query.accepted: 1D array of accepted tags for previous picture set only
-      //-req.query.rejected: 1D array of rejected tags for previous picture set only
+      //-req.query.data.accepted: 1D array of accepted tags for previous picture set only
+      //-req.query.data.rejected: 1D array of rejected tags for previous picture set only
       //-req.query.numberInContention: Number of holiday packages kept in contention
       //for this set of pictures.
       //--- should return:
@@ -97,7 +116,7 @@ module.exports = function(db) {
       //holiday packages.
       //-tags: List of most effective tags for holiday packages still in contention. Try to pick one of these when asking user.
       try {
-        moreRandomPictures(req.query)
+        moreRandomPictures(nq)
         .then(function(returned) {
           console.log("JSON SEND 'MorePictures'");
           res.json({
@@ -115,16 +134,16 @@ module.exports = function(db) {
         console.log(err);
       }
     }
-    else if(req.query.type === "BestHolidays") {
+    else if(nq.type === "BestHolidays") {
       //--- needs:
-      //-req.query.accepted: 1D array of accepted tags for previous picture set only
-      //-req.query.rejected: 1D array of rejected tags for previous picture set only
+      //-req.query.data.accepted: 1D array of accepted tags for previous picture set only
+      //-req.query.data.rejected: 1D array of rejected tags for previous picture set only
       //-req.query.numberReturned: number of returned packages
       //-req.query.scores: Points after previous pictures for best holiday packages
       //--- should return:
       //-data: DB entries for 'numberReturned' best holiday packages, ordered highest score first
       try {
-        bestHolidays(req.query)
+        bestHolidays(nq)
         .then(function(returned) {
           console.log("JSON SEND 'BestHolidays'");
           res.json({
@@ -215,7 +234,7 @@ module.exports = function(db) {
     try {
       getInitializedHolidays()
       .then(function(scores) { //init scores
-        getBestScoredAlternatives(scores, query.numberInContention, query.accepted, query.rejected) //n best scores
+        getBestScoredAlternatives(scores, query.numberInContention, query.data.accepted, query.data.rejected) //n best scores
         .then(function(bestScores) {
           getTagList(bestScores)
           .then(function(tagList) {
@@ -409,7 +428,7 @@ module.exports = function(db) {
     var deferred = q.defer();
 
     try {
-      getBestScoredAlternatives(query.scores, query.numberReturned, query.accepted, query.rejected) //n best scores
+      getBestScoredAlternatives(query.scores, query.numberReturned, query.data.accepted, query.data.rejected) //n best scores
       .then(function(bestScores) {
         //console.log(bestScores);
         //bestScores = [_id, [[tag, multiplier] pairs], score]
