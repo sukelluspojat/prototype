@@ -11,15 +11,17 @@ a {
 .off-deck {
   display: none;
 }
-
+#container {
+  margin-top: -20px;
+}
 #viewport {
   width: 379px;
   height: 742px;
   /* border-style: solid;
   border-color: black; */
   position: relative;
-  margin-left: 36%;
-  margin-top: -50px;
+  margin-left: 34%;
+  /* margin-top: -20px; */
   background-image: url('/images/iphone4b.png');
   background-size: cover;
 }
