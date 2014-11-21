@@ -412,7 +412,7 @@ module.exports = function(db) {
   function getBestScoredAlternatives(holidayScores, n, accepted, declined) {
     var deferred = q.defer();
     console.log('at getBestScoredAlternatives');
-
+    console.log(holidayScores);
     try {
       //for each holiday, for each tag in holiday:
       // calculate points for current tag
