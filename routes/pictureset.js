@@ -457,8 +457,8 @@ module.exports = function(db) {
         .then(function(data) {
           console.log("-----------------------------holiday db entry");
           console.log(data);
-          bestScores.shift();
-          deferred.resolve([data[0], bestScores]); //as an array for symmetry with others
+          query.scores.shift();
+          deferred.resolve([data[0], query.scores]); //as an array for symmetry with others
         });
       }
       catch (err) {
