@@ -12,7 +12,7 @@ a {
   display: none;
 }
 #container {
-  margin-top: -20px;
+  /* margin-top: -20px; */
 }
 #viewport {
   width: 379px;
@@ -140,7 +140,7 @@ a {
 .vacationElement {
   height: 100%;
   width: 100%;
-  padding: 8px;
+  padding: 18px;
   box-sizing: border-box;
   color: white;
   overflow: scroll;

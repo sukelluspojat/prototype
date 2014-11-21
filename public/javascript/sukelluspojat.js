@@ -266,7 +266,7 @@ var VacationPicture = React.createClass({
 var VacationElement = React.createClass({
   handleScroll: function(e) {
     this.state.counter++;
-    if (this.state.counter > 90) {
+    if (this.state.counter > 130) {
       var newPos = (this.state.positio + 1)%this.state.bgPictureAmount;
       this.setState({
         positio: newPos,
@@ -283,11 +283,11 @@ var VacationElement = React.createClass({
   },
   getInitialState: function() {
     return {
-      pictures: ["/images/image_002.jpg", "/images/image_003.jpg", "/images/image_004.jpg"],//this.props.data.pictureUrls,
+      pictures: this.props.data.pictureUrls,
       data: this.props.data,
       styleObj: {},
       positio: 0,
-      bgPictureAmount: 3,
+      bgPictureAmount: 5,
       counter: 0,
       showOptions: 'none',
       showInfo: 'block',
