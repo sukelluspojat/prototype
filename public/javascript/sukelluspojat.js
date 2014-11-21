@@ -290,7 +290,7 @@ var VacationElement = React.createClass({
       bgPictureAmount: 3,
       counter: 0,
       showOptions: 'none',
-      showInfo: 'auto',
+      showInfo: 'block',
       scores: this.props.scores,
       type: this.props.type
       };
@@ -301,20 +301,40 @@ var VacationElement = React.createClass({
       showInfo: 'none'
     })
   },
+  handleAccept: function() {
+    SukellusSession.screenContainer.setState(
+      {
+        buttonText: "Plan a new holiday?",
+        data: '',
+        type: 'InitialPictures'
+      }
+    );
+  },
   handleDeclineReason: function() {
     $.ajax({
       url: this.props.url +
-        '?numberOfPictures='+
-        '&randomIdOrder=' +
+        '?numberOfPictures=0'+
+        '&randomIdOrder=0' +
         '&scores=' + JSON.stringify(this.state.scores) +
-        '&type='+this.state.type +'&numberInContention=',
+        '&type='+this.state.type +'&numberInContention=0',
       dataType: 'json',
       success: function(data) {
+        if (data.data === null) {
+          console.log("NULLLLLL");
+          SukellusSession.screenContainer.setState(
+            {
+              buttonText: "Plan a new holiday?",
+              data: '',
+              type: 'InitialPictures'
+            }
+          );
+          return;
+        }
         console.log(data);
         this.setState({
           data: data.data,
           showOptions: 'none',
-          showInfo: 'auto',
+          showInfo: 'block',
           scores: data.scores,
           type: data.type
         });
@@ -332,13 +352,14 @@ var VacationElement = React.createClass({
       <div className="vacationBG" style={ {background: 'url('+this.state.pictures[this.state.positio]+')'}}>
         <div className={ 'vacationElement' } onScroll={this.handleScroll}>
           <div style={{display: this.state.showInfo}}>
-            <h3>{ this.state.data.name }</h3>
+            <h2>{ this.state.data.name }</h2>
             <p>{ this.state.data.infoText }</p>
-            <h4>Price: {this.state.data.price}</h4>
+            <h4>Price: {this.state.data.price}€</h4>
             <div className='acceptButtons'>
               <button className="action-button shadow animate blue" style={ {display: 'inline'} }
                 onClick={ this.handleDeclineClick }> Decline </button>
-              <button className="action-button shadow animate green" style={ {display: 'inline'} }> Buy </button>
+              <button className="action-button shadow animate green" style={ {display: 'inline'} }
+                onClick={ this.handleAccept }> Buy </button>
             </div>
           </div>
           <div className="declineButtonContainer" style={ {display: this.state.showOptions} }>
@@ -439,7 +460,8 @@ var ScreenContent = React.createClass({
       randomIdOrder: [],
       type: 'InitialPictures',
       numberInContention: '5',
-      scores: []
+      scores: [],
+      buttonText: 'Plan your Holiday!'
       };
   },
   componentWillMount: function() {
@@ -456,18 +478,7 @@ var ScreenContent = React.createClass({
     var dataType, data;
     dataType = this.state.data;
     data = dataType.data;
-    if (dataType === null) {
-      console.log("start screen");
-      return (
-        <div className='screenContainer'>
-          <div className='screen' id='screen'>
-            <button className="action-button shadow animate yellow" style={ {display: 'block'} }
-              onMouseOver={this.handleMouseOver}> Plan your holiday! </button>
-          </div>
-        </div>
-      );
-    }
-    else if (dataType.picture === 1) {
+    if (dataType.picture === 1) {
       console.log("picture list");
       var pictures = data.map(function(data) {
         return <PictureSet data={ data } key={ data._id } />;
@@ -495,7 +506,8 @@ var ScreenContent = React.createClass({
           <div className='screen' id='screen'>
             <div className='verticalHelperOuter'>
               <div className='verticalHelperInner'>
-                <button className="action-button shadow animate yellow" style={ {display: 'block'} } onClick={this.loadDataFromServer}> Plan your holiday! </button>
+                <button className="action-button shadow animate yellow" style={ {display: 'block'} }
+                  onClick={this.loadDataFromServer}> {this.state.buttonText} </button>
               </div>
             </div>
           </div>

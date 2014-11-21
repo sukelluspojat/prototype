@@ -45,7 +45,7 @@ module.exports = function(db) {
       // });
     // }
     // catch (err) {
-      // console.log(err);
+      // console.log(err.stack);
     // }
 	// }
 
@@ -72,7 +72,7 @@ module.exports = function(db) {
         }
         else {console.log("skipped");}
       }
-    } catch (err) {console.log(err);}
+    } catch (err) {console.log(err.stack);}
 
     console.log("parsed?");
 
@@ -101,7 +101,7 @@ module.exports = function(db) {
         });
       }
       catch (err) {
-        console.log(err);
+        console.log(err.stack);
       }
     }
     else if(nq.type === "MorePictures") {
@@ -149,7 +149,7 @@ module.exports = function(db) {
         });
       }
       catch (err) {
-        console.log(err);
+        console.log(err.stack);
       }
     }
     else if(nq.type === "BestHolidays") {
@@ -212,7 +212,7 @@ module.exports = function(db) {
       );
 		}
 		catch (err) {
-		  console.log(err);
+		  console.log(err.stack);
       deferred.reject("error");
 		}
 
@@ -235,7 +235,7 @@ module.exports = function(db) {
       });
     }
     catch (err) {
-      console.log(err);
+      console.log(err.stack);
     }
 
     return deferred.promise;
@@ -317,7 +317,7 @@ module.exports = function(db) {
             )
   			}
   			catch (err) {
-  				console.log(err);
+  				console.log(err.stack);
   			}
   		},
   		function(err) {
@@ -367,7 +367,7 @@ module.exports = function(db) {
             )
   			}
   			catch (err) {
-  				console.log(err);
+  				console.log(err.stack);
   			}
   		},
   		function(err) {
@@ -499,7 +499,7 @@ module.exports = function(db) {
             )
   			}
   			catch (err) {
-  				console.log(err);
+  				console.log(err.stack);
   			}
   		},
   		function(err) {
@@ -534,7 +534,7 @@ module.exports = function(db) {
         );
     }
     catch (err) {
-      console.log(err);
+      console.log(err.stack);
     }
 
     return deferred.promise;
@@ -573,7 +573,7 @@ module.exports = function(db) {
       });
     }
     catch (err) {
-      console.log(err);
+      console.log(err.stack);
     }
 	}
 

@@ -87,7 +87,7 @@ a {
   font-family: eight-bit;
   color: #2c2c2c;
   text-align: center;
-  font-size: 0.6em;
+  font-size: 0.8em;
   padding-top: 50px;
   padding-bottom: 50px;
   padding-left: 38px;
@@ -153,7 +153,7 @@ a {
 .vacationBG {
   height:100%;
   width: 100%;
-  background-size: cover;
+  background-size: cover !important;
 }
 .stackVacation {
   box-sizing: border-box;
@@ -209,7 +209,7 @@ body {
 
 @font-face {
     font-family: eight-bit;
-    src: url("/stylesheets/8bit_wonder/8-BIT_WONDER.ttf");
+    src: url("/stylesheets/pixel_lcd7/Pixel_LCD-7.ttf");
 }
 @font-face {
     font-family: FontAwesome;
