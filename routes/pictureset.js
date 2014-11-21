@@ -155,9 +155,6 @@ module.exports = function(db) {
     else if(nq.type === "BestHolidays") {
       console.log(nq);
       //--- uses:
-      //-req.query.data.accepted: 1D array of accepted tags for previous picture set only
-      //-req.query.data.declined: 1D array of declined tags for previous picture set only
-      //-req.query.numberReturned: number of returned packages
       //-req.query.scores: Points after previous pictures for best holiday packages
       //--- should return:
       //-data: DB entries for 'numberReturned' best holiday packages, ordered highest score first
@@ -456,7 +453,7 @@ module.exports = function(db) {
 
     if(query.scores.length > 0) {
       try {
-        getBestScoredAlternatives(query.scores, query.numberInContention, query.data.accepted, query.data.declined) //n best scores
+        getBestScoredAlternatives(query.scores, query.numberInContention, [], []) //n best scores
         .then(function(bestScores) {
           console.log("-----------------------------best scores");
           console.log(bestScores);
