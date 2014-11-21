@@ -453,18 +453,12 @@ module.exports = function(db) {
     
     if(query.scores.length > 0) {
       try {
-        getBestScoredAlternatives(query.scores, query.numberInContention, [], []) //n best scores
-        .then(function(bestScores) {
-          console.log("-----------------------------best scores");
-          console.log(bestScores);
-          //format of bestScores = [_id, [[tag, multiplier] pairs], score]
-          getHolidaysForIds(_.map([bestScores[0]], function(tuple) {return tuple[0];}))
-          .then(function(data) {
-            console.log("-----------------------------holiday db entry");
-            console.log(data);
-            bestScores.shift();
-            deferred.resolve([data[0], bestScores]); //as an array for symmetry with others
-          });
+        getHolidaysForIds(_.map([query.scores[0]], function(tuple) {return tuple[0];}))
+        .then(function(data) {
+          console.log("-----------------------------holiday db entry");
+          console.log(data);
+          bestScores.shift();
+          deferred.resolve([data[0], bestScores]); //as an array for symmetry with others
         });
       }
       catch (err) {
