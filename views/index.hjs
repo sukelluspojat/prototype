@@ -8,14 +8,15 @@
     <script src="http://fb.me/react-0.12.0.js"></script>
     <script src="http://fb.me/JSXTransformer-0.12.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script type='text/javascript' src="/javascript/spin.js"></script>
     <script type='text/javascript' src="bower_components/toastr/toastr.js"></script>
     <script type='text/javascript' src='/javascript/swing.js'></script>
     <script type='text/jsx' src='/javascript/sukelluspojat.js'></script>
   </head>
   <body id='body'>
-    <p><code>throwOutConfidence</code> (<code id="throw-out-confidence-bind">0</code>)</p>
+    <!-- <p><code>throwOutConfidence</code> (<code id="throw-out-confidence-bind">0</code>)</p>
     <p><code>offset</code> (<code id="throw-out-offset">0</code>) </p>
-    <p> Tags: <span id="tags"></span> </p>
+    <p> Tags: <span id="tags"></span> </p> -->
     <div id="container"></div>
     </div>
   </body>

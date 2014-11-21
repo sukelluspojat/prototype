@@ -20,10 +20,10 @@ module.exports = function(db) {
   var negMultip = 0.5; // used to make rejections to have less effect on scores
 
 
-  
-  
-  
-  
+
+
+
+
   //--------------------------------------------
   // Used by other files. Returns picture data with .json.
   // req.query.numberOfPictures = number of wanted pictures
@@ -53,8 +53,8 @@ module.exports = function(db) {
     console.log(req.body.data);
     res.json({ ok: "ok"});
   }
-  
-  
+
+
   //--------------------------------------------
   // Used by other files.
   //
@@ -178,7 +178,7 @@ module.exports = function(db) {
         });
       }
       catch (err) {
-        console.log(err);
+        console.log(err.stack);
       }
     }
     else {
@@ -275,7 +275,7 @@ module.exports = function(db) {
       });
     }
     catch (err) {
-      console.log(err);
+      console.log(err.stack);
     }
 
     return deferred.promise;
@@ -401,7 +401,7 @@ module.exports = function(db) {
       );
 		}
 		catch (err) {
-		  console.log(err);
+		  console.log(err.stack);
       deferred.reject("error");
 		}
 
@@ -453,7 +453,7 @@ module.exports = function(db) {
 
   function bestHolidays(query) {
     var deferred = q.defer();
-    
+
     if(query.scores.length > 0) {
       try {
         getBestScoredAlternatives(query.scores, query.numberInContention, query.data.accepted, query.data.declined) //n best scores
@@ -471,7 +471,7 @@ module.exports = function(db) {
         });
       }
       catch (err) {
-        console.log(err);
+        console.log(err.stack);
       }
     }
     else {

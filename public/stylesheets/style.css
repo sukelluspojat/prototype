@@ -18,8 +18,8 @@ a {
   /* border-style: solid;
   border-color: black; */
   position: relative;
-  margin-left: 400px;
-  margin-top: -100px;
+  margin-left: 36%;
+  margin-top: -50px;
   background-image: url('/images/iphone4b.png');
   background-size: cover;
 }
@@ -296,10 +296,32 @@ body {
   border-bottom: 1px solid;
   outline: none;
 }
+.acceptButtons{
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+.acceptButtons button {
+  width: 46%;
+}
+
+
 .declineButtonContainer {
   padding-left: 10%;
   padding-right: 10%;
   padding-top: 20%;
   padding-bottom: 5%;
-
+}
+.verticalHelperOuter {
+  height: 100%;
+  width : 100%;
+  box-sizing: border-box;
+  position:relative;
+}
+.verticalHelperInner {
+  padding-left: 10%;
+  padding-right: 10%;
+  margin-top: -30px;
+  position: absolute;
+  top: 50%;
 }

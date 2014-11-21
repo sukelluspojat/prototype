@@ -1,7 +1,6 @@
-// quick solution for event handling problems
-var num = 'aaaaaaaaaaaaaaaaaaaaaa';
+// globals
 var _globalIfDrag = false;
-
+var spinner = new Spinner();
 var SukellusSession = {
   screenContainer: {},
   stackElement: [],
@@ -10,20 +9,20 @@ var SukellusSession = {
   declinedTags: [],
   preferredTags: []
 }
-/////////////////////////////////////////////
-/////////////// STACK INIT ///////////////
-/////////////////////////////////////////////
 var stack,
   throwOutConfidenceBind,
   throwOutOffset,
   throwOutConfidenceElements = {};
 
 var initStack = function() {
-  throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind');
-  throwOutOffset = document.querySelector('#throw-out-offset');
+  /////////////////////////////////////////////
+  /////////////// STACK INIT ///////////////
+  /////////////////////////////////////////////
+  // throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind');
+  // throwOutOffset = document.querySelector('#throw-out-offset');
   var config = {
     throwOutConfidence: function (offset, element) {
-      throwOutOffset.innerHTML = offset;
+      // throwOutOffset.innerHTML = offset;
       if (Math.abs(offset) > 200) {
         return 1;
       }
@@ -33,7 +32,7 @@ var initStack = function() {
     }
   };
   stack = gajus.Swing.Stack(config);
-  throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind'),
+  // throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind'),
 
 
   stack.on('throwout', function (e) {
@@ -41,13 +40,15 @@ var initStack = function() {
       toastr.options = {
         "showDuration": "300",
         "hideDuration": "300",
-        "timeOut": "1000"
+        "timeOut": "1000",
       }
       // the last react componen on the list
       lastIndex = SukellusSession.stackElement.length - 1;
       handleTag(SukellusSession.stackElement[lastIndex].props.data.tags, e.throwDirection);
       if (lastIndex === 0) {
+        spinner.spin();
         SukellusSession.screenContainer.buildUrl();
+        document.getElementById("viewport").appendChild(spinner.el);
       }
       if (e.throwDirection === 1) {
         toastr.options.positionClass = "toast-top-right";
@@ -63,7 +64,6 @@ var initStack = function() {
       console.log(e.target.style.display);
       e.target.classList.remove('in-deck');
       e.target.classList.add('off-deck');
-      // e.target.parentNode.removeChild(e.target);
       toastr.clear();
   });
 
@@ -137,8 +137,8 @@ var handleTag = function(tags, direction) {
       SukellusSession.declinedTags.push(tags[tags.length-1]);
     }
   }
-  document.getElementById("tags").innerHTML = "Accepted: " + SukellusSession.acceptedTags.join(', ') +
-                                              "<br>Declined: " + SukellusSession.declinedTags.join(', ');
+  // document.getElementById("tags").innerHTML = "Accepted: " + SukellusSession.acceptedTags.join(', ') +
+  //                                             "<br>Declined: " + SukellusSession.declinedTags.join(', ');
 }
 
 var handlePreferredTag = function(tag) {
@@ -239,7 +239,7 @@ var PictureSet = React.createClass({
     console.log("pictureset");
     return (
       <li onClick={ this.handleClick } className='pictureListElement'>
-        <div className='screen'>
+        <div className='screen' id='screen'>
           <Picture url={ this.props.data.url } cName="picture"/>
           <PictureInfo data={ this.props.data } styleObj={ this.state.styleObj } />
         </div>
@@ -253,9 +253,7 @@ var PictureSet = React.createClass({
   }
 })
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/////////////////////// VACATION LIST ELEMENTS ///////////////////////
-
+/////////////////////// VACATION LIST ELEMENTS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var VacationPicture = React.createClass({
   render: function() {
@@ -285,13 +283,16 @@ var VacationElement = React.createClass({
   },
   getInitialState: function() {
     return {
-      pictures: this.props.data.pictureUrls,
+      pictures: ["/images/image_002.jpg", "/images/image_003.jpg", "/images/image_004.jpg"],//this.props.data.pictureUrls,
+      data: this.props.data,
       styleObj: {},
       positio: 0,
       bgPictureAmount: 3,
       counter: 0,
       showOptions: 'none',
-      showInfo: 'auto'
+      showInfo: 'auto',
+      scores: this.props.scores,
+      type: this.props.type
       };
   },
   handleDeclineClick: function() {
@@ -300,22 +301,57 @@ var VacationElement = React.createClass({
       showInfo: 'none'
     })
   },
+  handleDeclineReason: function() {
+    $.ajax({
+      url: this.props.url +
+        '?numberOfPictures='+
+        '&randomIdOrder=' +
+        '&scores=' + JSON.stringify(this.state.scores) +
+        '&type='+this.state.type +'&numberInContention=',
+      dataType: 'json',
+      success: function(data) {
+        console.log(data);
+        this.setState({
+          data: data.data,
+          showOptions: 'none',
+          showInfo: 'auto',
+          scores: data.scores,
+          type: data.type
+        });
+        console.log("handleEmptySet");
+
+      }.bind(this),
+      error: function(error) {
+        console.log(error);
+        console.log("Timeout");
+      }.bind(this)
+    });
+  },
   render: function() {
     return(
       <div className="vacationBG" style={ {background: 'url('+this.state.pictures[this.state.positio]+')'}}>
-        <div className={ 'vacationElement' } onClick={this.handleScroll}>
+        <div className={ 'vacationElement' } onScroll={this.handleScroll}>
           <div style={{display: this.state.showInfo}}>
-            <h3>{ this.props.data.infoHeading }</h3>
-            <p>{ this.props.data.infoText }</p>
-            <button className="action-button shadow animate blue" style={ {display: 'inline'} } onClick={ this.handleDeclineClick }> Decline </button>
-            <button className="action-button shadow animate green" style={ {display: 'inline'} }> Buy </button>
+            <h3>{ this.state.data.name }</h3>
+            <p>{ this.state.data.infoText }</p>
+            <h4>Price: {this.state.data.price}</h4>
+            <div className='acceptButtons'>
+              <button className="action-button shadow animate blue" style={ {display: 'inline'} }
+                onClick={ this.handleDeclineClick }> Decline </button>
+              <button className="action-button shadow animate green" style={ {display: 'inline'} }> Buy </button>
+            </div>
           </div>
           <div className="declineButtonContainer" style={ {display: this.state.showOptions} }>
-            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Price </button>
-            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Location </button>
-            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Distance </button>
-            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Addtional Services </button>
-            <button className="action-button shadow animate yellow" style={ {display: 'block'} } onMouseOver={this.handleMouseOver}> Other </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} }
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Price </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} }
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Location </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} }
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Distance </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} }
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Addtional Services </button>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} }
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Other </button>
           </div>
         </div>
       </div>
@@ -323,9 +359,7 @@ var VacationElement = React.createClass({
   }
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/////////////////////// SCREENCONTENT COMPONENT ///////////////////////
-
+/////////////////////// SCREENCONTENT COMPONENT ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var ScreenContent = React.createClass({
   loadDataFromServer: function() {
@@ -387,13 +421,11 @@ var ScreenContent = React.createClass({
       '&scores='+ JSON.stringify(this.state.scores) +'&type='+this.state.type;
     acceptedTags = '&accepted=' + JSON.stringify(SukellusSession.acceptedTags);
     declinedTags = '&declined=' + JSON.stringify(SukellusSession.declinedTags);
-
     var url = {
       accepted: SukellusSession.acceptedTags,
       declined: SukellusSession.declinedTags
     }
     var string = JSON.stringify(url);
-
     this.handleEmptySet('&data='+string);
 
 
@@ -412,25 +444,31 @@ var ScreenContent = React.createClass({
   },
   componentWillMount: function() {
       console.log("jou");
-      this.loadDataFromServer(this.state.url);
+      // this.loadDataFromServer();
       SukellusSession.screenContainer = this;
   },
   componentDidUpdate: function() {
     initStack();
+    spinner.stop();
     console.log("DidUpdate");
   },
   render: function() {
     var dataType, data;
-    console.log("render");
     dataType = this.state.data;
     data = dataType.data;
     if (dataType === null) {
+      console.log("start screen");
       return (
         <div className='screenContainer'>
+          <div className='screen' id='screen'>
+            <button className="action-button shadow animate yellow" style={ {display: 'block'} }
+              onMouseOver={this.handleMouseOver}> Plan your holiday! </button>
+          </div>
         </div>
       );
     }
     else if (dataType.picture === 1) {
+      console.log("picture list");
       var pictures = data.map(function(data) {
         return <PictureSet data={ data } key={ data._id } />;
       });
@@ -440,35 +478,26 @@ var ScreenContent = React.createClass({
         </ul>
       );
     }
-    else if ( dataType.vacationList === 1) {
-      // DO STUFF
-      // var vacationElements = data.map(function(data) {
-      //   return <VacationList data={ data } key={ data.id } />;
-      // });
-      // this.setState({type: 'BestHolidays'});
-      return (
-        <div className='screenContainer'>
-          <div className='screen'>
-            <VacationElement data={ data } />
-          </div>
-        </div>
-      );
-
-    }
     else if ( dataType.vacationInfo === 1) {
-      // DO STUFF
+      console.log("vacation info");
       return (
         <div className='screenContainer'>
-          <div className='screen'>
-            <VacationElement data={ data } />
+          <div className='screen' id='screen'>
+            <VacationElement data={ data } url={ this.props.url} scores={this.state.scores} type={this.state.type} />
           </div>
         </div>
       );
     }
     else {
+      console.log("something different");
       return (
         <div className='screenContainer'>
-          <div className='screen'>
+          <div className='screen' id='screen'>
+            <div className='verticalHelperOuter'>
+              <div className='verticalHelperInner'>
+                <button className="action-button shadow animate yellow" style={ {display: 'block'} } onClick={this.loadDataFromServer}> Plan your holiday! </button>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -487,6 +516,4 @@ var Viewport = React.createClass({
         );
     }
 });
-
-// React.renderComponent(<Viewport url={ '/users' } />, document.getElementById("container"));
-React.renderComponent(<Viewport url={ '/pictureset' } />, document.getElementById("container"));
+React.render(<Viewport url={ '/pictureset' } />, document.getElementById("container"));
