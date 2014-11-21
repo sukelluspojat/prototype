@@ -61,7 +61,6 @@ var initStack = function() {
       // Use tags
       // check if last element -> let the server decide what to send next
       SukellusSession.stackElement.pop();
-      console.log(e.target.style.display);
       e.target.classList.remove('in-deck');
       e.target.classList.add('off-deck');
       toastr.clear();
@@ -73,14 +72,12 @@ var initStack = function() {
     throwOutConfidenceBind.innerHTML = e.throwOutConfidence.toFixed(2);
   });
   stack.on('dragstart', function (e) {
-    console.log("drag start stack");
     throwOutConfidenceElements.yes = e.target.querySelector('.yes').style;
     throwOutConfidenceElements.no = e.target.querySelector('.no').style;
 
 
   });
   stack.on('dragend', function (e) {
-    console.log("drag end stack");
     _globalIfDrag = true;
     if (e.throwOutConfidence != 1) {
         throwOutConfidenceElements.yes.opacity = 0;
@@ -154,12 +151,10 @@ document.onkeydown = function(e) {
   // left key for decline
   if (e.keyCode === 37) {
     removeFromStack(gajus.Swing.Card.DIRECTION_LEFT);
-    console.log('declineKey');
   }
   // right key for accept
   else if (e.keyCode === 39) {
     removeFromStack(gajus.Swing.Card.DIRECTION_RIGHT);
-    console.log('acceptedKey');
   }
 };
 
@@ -183,7 +178,6 @@ var UpdateStack = function() {
       targetElement.classList.add('in-deck');
       targetElement.classList.remove('off-deck');
   });
-  console.log("Stack updated");
 }
 /////////////////////////////////////////////////////////////////////
 /////////////////////// REACT PART ///////////////////////
@@ -226,17 +220,14 @@ var PictureSet = React.createClass({
     else {_globalIfDrag = false;}
   },
   componentDidMount: function() {
-    console.log("component mounted");
     SukellusSession.stackElement.push(this);
   },
   componentWillUnmount: function() {
-    console.log("unmount");
   },
   getInitialState: function() {
       return { styleObj: { display: 'none'} };
   },
   render: function() {
-    console.log("pictureset");
     return (
       <li onClick={ this.handleClick } className='pictureListElement'>
         <div className='screen' id='screen'>
@@ -295,13 +286,13 @@ var VacationElement = React.createClass({
       type: this.props.type
       };
   },
-  handleDeclineClick: function() {
+  handleDeclineClick: function(e) {
     this.setState({
       showOptions: 'block',
       showInfo: 'none'
     })
   },
-  handleAccept: function() {
+  handleAccept: function(e) {
     SukellusSession.screenContainer.setState(
       {
         buttonText: "Plan a new holiday?",
@@ -310,7 +301,7 @@ var VacationElement = React.createClass({
       }
     );
   },
-  handleDeclineReason: function() {
+  handleDeclineReason: function(e) {
     $.ajax({
       url: this.props.url +
         '?numberOfPictures=0'+
@@ -320,7 +311,6 @@ var VacationElement = React.createClass({
       dataType: 'json',
       success: function(data) {
         if (data.data === null) {
-          console.log("NULLLLLL");
           SukellusSession.screenContainer.setState(
             {
               buttonText: "Plan a new holiday?",
@@ -330,7 +320,7 @@ var VacationElement = React.createClass({
           );
           return;
         }
-        console.log(data);
+
         this.setState({
           data: data.data,
           showOptions: 'none',
@@ -338,11 +328,8 @@ var VacationElement = React.createClass({
           scores: data.scores,
           type: data.type
         });
-        console.log("handleEmptySet");
-
       }.bind(this),
       error: function(error) {
-        console.log(error);
         console.log("Timeout");
       }.bind(this)
     });
@@ -400,8 +387,6 @@ var ScreenContent = React.createClass({
             type: data.type,
             scores: data.scores
           });
-          console.log(data);
-          console.log("ajax GET");
         }.bind(this),
         error: function(error) {
           console.log(error);
@@ -418,7 +403,6 @@ var ScreenContent = React.createClass({
         this.state.numberInContention + url,
       dataType: 'json',
       success: function(data) {
-        console.log(data);
         this.setState({
           data: data,
           numberOfPictures: '5',
@@ -426,8 +410,6 @@ var ScreenContent = React.createClass({
           type: data.type,
           scores: data.scores
         });
-        console.log("handleEmptySet");
-
       }.bind(this),
       error: function(error) {
         console.log(error);
@@ -452,7 +434,6 @@ var ScreenContent = React.createClass({
 
   },
   getInitialState: function() {
-    console.log("init");
     return {
       data: {data: ''},
       url: this.props.url,
@@ -465,21 +446,17 @@ var ScreenContent = React.createClass({
       };
   },
   componentWillMount: function() {
-      console.log("jou");
-      // this.loadDataFromServer();
       SukellusSession.screenContainer = this;
   },
   componentDidUpdate: function() {
     initStack();
     spinner.stop();
-    console.log("DidUpdate");
   },
   render: function() {
     var dataType, data;
     dataType = this.state.data;
     data = dataType.data;
     if (dataType.picture === 1) {
-      console.log("picture list");
       var pictures = data.map(function(data) {
         return <PictureSet data={ data } key={ data._id } />;
       });
@@ -490,7 +467,6 @@ var ScreenContent = React.createClass({
       );
     }
     else if ( dataType.vacationInfo === 1) {
-      console.log("vacation info");
       return (
         <div className='screenContainer'>
           <div className='screen' id='screen'>
@@ -500,7 +476,6 @@ var ScreenContent = React.createClass({
       );
     }
     else {
-      console.log("something different");
       return (
         <div className='screenContainer'>
           <div className='screen' id='screen'>
@@ -520,7 +495,6 @@ var ScreenContent = React.createClass({
 
 var Viewport = React.createClass({
     render: function() {
-      console.log("viewport");
         return (
             <div id = "viewport">
                 <ScreenContent url={this.props.url} />
