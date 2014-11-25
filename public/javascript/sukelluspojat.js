@@ -18,8 +18,6 @@ var initStack = function() {
   /////////////////////////////////////////////
   /////////////// STACK INIT ///////////////
   /////////////////////////////////////////////
-  // throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind');
-  // throwOutOffset = document.querySelector('#throw-out-offset');
   var config = {
     throwOutConfidence: function (offset, element) {
       // throwOutOffset.innerHTML = offset;
@@ -32,8 +30,6 @@ var initStack = function() {
     }
   };
   stack = gajus.Swing.Stack(config);
-  // throwOutConfidenceBind = document.querySelector('#throw-out-confidence-bind'),
-
 
   stack.on('throwout', function (e) {
       var lastIndex, parent, direction;
@@ -302,6 +298,7 @@ var VacationElement = React.createClass({
     );
   },
   handleDeclineReason: function(e) {
+    this.setState({buttonState: true});
     $.ajax({
       url: this.props.url +
         '?numberOfPictures=0'+
@@ -326,7 +323,8 @@ var VacationElement = React.createClass({
           showOptions: 'none',
           showInfo: 'block',
           scores: data.scores,
-          type: data.type
+          type: data.type,
+          buttonState: false
         });
       }.bind(this),
       error: function(error) {
@@ -351,15 +349,15 @@ var VacationElement = React.createClass({
           </div>
           <div className="declineButtonContainer" style={ {display: this.state.showOptions} }>
             <button className="action-button shadow animate yellow" style={ {display: 'block'} }
-              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Price </button>
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason } disabled={this.state.buttonState}> Price </button>
             <button className="action-button shadow animate yellow" style={ {display: 'block'} }
-              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Location </button>
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason } disabled={this.state.buttonState}> Location </button>
             <button className="action-button shadow animate yellow" style={ {display: 'block'} }
-              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Distance </button>
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason } disabled={this.state.buttonState}> Distance </button>
             <button className="action-button shadow animate yellow" style={ {display: 'block'} }
-              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Addtional Services </button>
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason } disabled={this.state.buttonState}> Addtional Services </button>
             <button className="action-button shadow animate yellow" style={ {display: 'block'} }
-              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason }> Other </button>
+              onMouseOver={this.handleMouseOver} onClick={ this.handleDeclineReason } disabled={this.state.buttonState}> Other </button>
           </div>
         </div>
       </div>
@@ -371,6 +369,7 @@ var VacationElement = React.createClass({
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var ScreenContent = React.createClass({
   loadDataFromServer: function() {
+    this.setState({buttonState: true});
     var urlEnding = '?numberOfPictures='+this.state.numberOfPictures+
       '&randomIdOrder='+ JSON.stringify(this.state.randomIdOrder)+
       '&scores='+ JSON.stringify(this.state.scores) +
@@ -385,7 +384,8 @@ var ScreenContent = React.createClass({
             numberOfPictures: '5',
             randomIdOrder: data.randomIdOrder,
             type: data.type,
-            scores: data.scores
+            scores: data.scores,
+            buttonState: false
           });
         }.bind(this),
         error: function(error) {
@@ -442,7 +442,8 @@ var ScreenContent = React.createClass({
       type: 'InitialPictures',
       numberInContention: '5',
       scores: [],
-      buttonText: 'Plan your Holiday!'
+      buttonText: 'Plan your Holiday!',
+      buttonState: false
       };
   },
   componentWillMount: function() {
@@ -482,7 +483,7 @@ var ScreenContent = React.createClass({
             <div className='verticalHelperOuter'>
               <div className='verticalHelperInner'>
                 <button className="action-button shadow animate yellow" style={ {display: 'block'} }
-                  onClick={this.loadDataFromServer}> {this.state.buttonText} </button>
+                  onClick={this.loadDataFromServer} disabled={this.state.buttonState}> {this.state.buttonText} </button>
               </div>
             </div>
           </div>
